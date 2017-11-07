@@ -36,6 +36,7 @@ public class DisassemblyManager {
     private int inputBitCursor = 16;
     private List<Short> outputData = null;
     private Tile[] outputTiles = null;
+    private StringBuilder debugSb = null;
     
     Color[] palette = null;
     Tile[] tileset = new Tile[128*5];
@@ -151,7 +152,7 @@ public class DisassemblyManager {
     private MapBlock[] parseBlockData(){
         MapBlock[] blocks = null;
         try{
-            
+            //debugSb = new StringBuilder(inputData.length*8);
             int initialCommandNumber = getCommandNumber();
             int remainingCommandNumber = initialCommandNumber;
             outputData = new ArrayList(initialCommandNumber);
@@ -162,11 +163,13 @@ public class DisassemblyManager {
                         /* 00 */
                         //System.out.println("commandNumber=$" + Integer.toHexString(initialCommandNumber-remainingCommandNumber)+" - repeatLastOutputTile");
                         repeatLastOutputTile();
+                        //System.out.println(debugSb.substring(debugSb.length()-1-2));
                         //System.out.println("outputData="+outputData);
                     }else{
                         /* 01 */
                         //System.out.println("commandNumber=$" + Integer.toHexString(initialCommandNumber-remainingCommandNumber)+" - outputNextTileFromTileset");
                         outputNextTileFromTileset();
+                        //System.out.println(debugSb.substring(debugSb.length()-1-2));
                         //System.out.println("outputData="+outputData);
                     }
                 }else{
@@ -176,11 +179,13 @@ public class DisassemblyManager {
                             /* 100 */
                             //System.out.println("commandNumber=$" + Integer.toHexString(initialCommandNumber-remainingCommandNumber)+" - outputRightTileFromHistory");
                             outputRightTileFromHistory();
+                            //System.out.println(debugSb.substring(debugSb.length()-1-3));
                             //System.out.println("outputData="+outputData);
                         }else{
                             /* 101 */
                             //System.out.println("commandNumber=$" + Integer.toHexString(initialCommandNumber-remainingCommandNumber)+" - outputBottomTileFromHistory");
                             outputBottomTileFromHistory();
+                            //System.out.println(debugSb.substring(debugSb.length()-1-3));
                             //System.out.println("outputData="+outputData);
                         }
                     }else{
@@ -188,11 +193,13 @@ public class DisassemblyManager {
                             /* 110 */
                             //System.out.println("commandNumber=$" + Integer.toHexString(initialCommandNumber-remainingCommandNumber)+" - outputNextTileWithSameFlags");
                             outputNextTileWithSameFlags();
+                            //System.out.println(debugSb.substring(debugSb.length()-1-14));
                             //System.out.println("outputData="+outputData);
                         }else{
                             /* 111 */
                             //System.out.println("commandNumber=$" + Integer.toHexString(initialCommandNumber-remainingCommandNumber)+" - outputNextTileWithNewFlags");
                             outputNextTileWithNewFlags();
+                            //System.out.println(debugSb.substring(debugSb.length()-1-17));
                             //System.out.println("outputData="+outputData);
                         }
                     }
@@ -380,6 +387,7 @@ public class DisassemblyManager {
             }
             tile.setId(value&0x3FF);
             outputTiles[i] = tile;
+            System.out.println(i+"="+tile.getId()+", "+tile.isHighPriority()+" "+tile.ishFlip()+" "+tile.isvFlip());
         }
         MapBlock[] blocks = new MapBlock[outputTiles.length/9];
         for(int i=0;i<blocks.length;i++){
@@ -409,6 +417,7 @@ public class DisassemblyManager {
         } 
         bit = (inputWord>>(15-inputBitCursor)) & 1;
         inputBitCursor++;
+        //debugSb.append(bit);
         return bit;
     }
 
@@ -602,7 +611,7 @@ public class DisassemblyManager {
     
     private String produceRelativeValue(Tile tile, Tile previousTile){
         String value = null;
-        for(int i=1;i<32;i++){
+        for(int i=0;i<32;i++){
             int index = previousTile.getId() - i;
             if(index>0 && index<tileset.length){
                 Tile relativeTile = tileset[index];
