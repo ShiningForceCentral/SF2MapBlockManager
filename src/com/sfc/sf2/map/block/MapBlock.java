@@ -6,7 +6,7 @@
 package com.sfc.sf2.map.block;
 
 import com.sfc.sf2.graphics.Tile;
-import java.awt.Color;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -16,7 +16,11 @@ public class MapBlock {
     
     private int index;
     
+    private int flagMask;
+    
     private Tile[] tiles;
+    
+    private BufferedImage image;
     
     public int getIndex() {
         return index;
@@ -26,12 +30,41 @@ public class MapBlock {
         this.index = index;
     }  
 
+    public int getFlagMask() {
+        return flagMask;
+    }
+
+    public void setFlagMask(int flagMask) {
+        this.flagMask = flagMask;
+    }
+
     public Tile[] getTiles() {
         return tiles;
     }
 
     public void setTiles(Tile[] tiles) {
         this.tiles = tiles;
+    }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public void setImage(BufferedImage image) {
+        this.image = image;
+    }
+    
+    @Override
+    public boolean equals(Object other){
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof MapBlock))return false;
+        MapBlock block = (MapBlock)other;
+        if(this.index == block.getIndex() && this.flagMask == block.getFlagMask()){
+            return true;
+        }else{
+            return false;
+        }
     }
     
 }

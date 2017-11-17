@@ -392,7 +392,7 @@ public class DisassemblyManager {
         MapBlock[] blocks = new MapBlock[outputTiles.length/9];
         for(int i=0;i<blocks.length;i++){
             MapBlock block = new MapBlock();
-            block.setIndex(i+3);
+            block.setIndex(i);
             block.setTiles(Arrays.copyOfRange(outputTiles,i*9, i*9+9));
             blocks[i] = block;
         }
