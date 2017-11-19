@@ -16,7 +16,7 @@ public class MapBlock {
     
     private int index;
     
-    private int flagMask;
+    private int flags;
     
     private Tile[] tiles;
     
@@ -30,12 +30,12 @@ public class MapBlock {
         this.index = index;
     }  
 
-    public int getFlagMask() {
-        return flagMask;
+    public int getFlags() {
+        return flags;
     }
 
-    public void setFlagMask(int flagMask) {
-        this.flagMask = flagMask;
+    public void setFlags(int flags) {
+        this.flags = flags;
     }
 
     public Tile[] getTiles() {
@@ -60,7 +60,7 @@ public class MapBlock {
         if (other == this) return true;
         if (!(other instanceof MapBlock))return false;
         MapBlock block = (MapBlock)other;
-        if(this.index == block.getIndex() && this.flagMask == block.getFlagMask()){
+        if(this.index == block.getIndex() && this.flags == block.getFlags()){
             return true;
         }else{
             return false;
