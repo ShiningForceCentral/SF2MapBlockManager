@@ -60,9 +60,9 @@ public class MapBlockManager {
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportOriginalRom() - Original ROM exported.");        
     }      
     
-    public void exportPng(String filepath){
+    public void exportPng(String filepath, int blocksPerRow){
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportPng() - Exporting PNG ...");
-        PngManager.exportPng(blocks, filepath);
+        PngManager.exportPng(blocks, filepath, blocksPerRow);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportPng() - PNG exported.");       
     }
 

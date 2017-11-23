@@ -10,6 +10,9 @@ import com.sfc.sf2.map.block.MapBlock;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import javax.swing.JPanel;
@@ -18,14 +21,27 @@ import javax.swing.JPanel;
  *
  * @author wiz
  */
-public class MapBlockLayout extends JPanel {
+public class MapBlockLayout extends JPanel implements MouseListener, MouseMotionListener {
+    
+    public static int selectedBlockIndex0;
+    public static int selectedBlockIndex1;
     
     private static final int DEFAULT_TILES_PER_ROW = 3;
     
     private int tilesPerRow = DEFAULT_TILES_PER_ROW;
     private MapBlock[] blocks;
     private int currentDisplaySize = 1;
+
+    private BufferedImage currentImage;
+    private boolean redraw = true;
+    private int renderCounter = 0;    
     
+
+    public MapBlockLayout() {
+       addMouseListener(this);
+       addMouseMotionListener(this);
+    }
+   
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);   
@@ -33,30 +49,50 @@ public class MapBlockLayout extends JPanel {
     }
     
     public BufferedImage buildImage(){
-        BufferedImage image = buildImage(this.blocks,this.tilesPerRow, false);
-        setSize(image.getWidth(), image.getHeight());
-        return image;
+        if(redraw){
+            currentImage = buildImage(this.blocks,this.tilesPerRow, false);
+            setSize(currentImage.getWidth(), currentImage.getHeight());
+        }
+        return currentImage;
     }
     
-    public BufferedImage buildImage(MapBlock[] blocks, int tilesPerRow, boolean pngExport){
-        int imageHeight = blocks.length*3*8;
-        BufferedImage image;
-        IndexColorModel icm = buildIndexColorModel(blocks[0].getTiles()[0].getPalette());
-        image = new BufferedImage(tilesPerRow*8, imageHeight , BufferedImage.TYPE_BYTE_BINARY, icm);
-        Graphics graphics = image.getGraphics();        
-
-        for(int i=0;i<blocks.length;i++){
-            graphics.drawImage(blocks[i].getTiles()[0].getImage(), 0*8, i*3*8 + 0*8, null);
-            graphics.drawImage(blocks[i].getTiles()[1].getImage(), 1*8, i*3*8 + 0*8, null);
-            graphics.drawImage(blocks[i].getTiles()[2].getImage(), 2*8, i*3*8 + 0*8, null);
-            graphics.drawImage(blocks[i].getTiles()[3].getImage(), 0*8, i*3*8 + 1*8, null);
-            graphics.drawImage(blocks[i].getTiles()[4].getImage(), 1*8, i*3*8 + 1*8, null);
-            graphics.drawImage(blocks[i].getTiles()[5].getImage(), 2*8, i*3*8 + 1*8, null);
-            graphics.drawImage(blocks[i].getTiles()[6].getImage(), 0*8, i*3*8 + 2*8, null);
-            graphics.drawImage(blocks[i].getTiles()[7].getImage(), 1*8, i*3*8 + 2*8, null);
-            graphics.drawImage(blocks[i].getTiles()[8].getImage(), 2*8, i*3*8 + 2*8, null);
-        }                  
-        return resize(image);
+    public BufferedImage buildImage(MapBlock[] blocks, int tilesPerRow, boolean pngExport){ 
+        renderCounter++;
+        System.out.println("Blockset render "+renderCounter);      
+        this.blocks = blocks;
+        if(redraw){
+            int blocksPerRow = tilesPerRow / 3;
+            int imageHeight = blocks.length*3*8/blocksPerRow;
+            Color[] palette = blocks[0].getTiles()[0].getPalette();
+            palette[0] = new Color(255, 255, 255, 0);
+            IndexColorModel icm = buildIndexColorModel(palette);
+            currentImage = new BufferedImage(tilesPerRow*8, imageHeight , BufferedImage.TYPE_BYTE_INDEXED, icm);
+            Graphics graphics = currentImage.getGraphics(); 
+            for(int i=0;i<blocks.length;i++){
+                int baseX = i%blocksPerRow;
+                int baseY = i/blocksPerRow;
+                MapBlock block = blocks[i];
+                BufferedImage blockImage = block.getImage();
+                if(blockImage==null){
+                    blockImage = new BufferedImage(3*8, 3*8 , BufferedImage.TYPE_BYTE_INDEXED, icm);
+                    Graphics blockGraphics = blockImage.getGraphics();                    
+                    blockGraphics.drawImage(block.getTiles()[0].getImage(), 0*8, 0*8, null);
+                    blockGraphics.drawImage(block.getTiles()[1].getImage(), 1*8, 0*8, null);
+                    blockGraphics.drawImage(block.getTiles()[2].getImage(), 2*8, 0*8, null);
+                    blockGraphics.drawImage(block.getTiles()[3].getImage(), 0*8, 1*8, null);
+                    blockGraphics.drawImage(block.getTiles()[4].getImage(), 1*8, 1*8, null);
+                    blockGraphics.drawImage(block.getTiles()[5].getImage(), 2*8, 1*8, null);
+                    blockGraphics.drawImage(block.getTiles()[6].getImage(), 0*8, 2*8, null);
+                    blockGraphics.drawImage(block.getTiles()[7].getImage(), 1*8, 2*8, null);
+                    blockGraphics.drawImage(block.getTiles()[8].getImage(), 2*8, 2*8, null);
+                    block.setImage(blockImage);
+                }
+                graphics.drawImage(blockImage, baseX*3*8, baseY*3*8, null);
+            }
+            redraw = false;
+            currentImage = resize(currentImage);
+        }          
+        return currentImage;
     }
     
     private IndexColorModel buildIndexColorModel(Color[] colors){
@@ -113,6 +149,43 @@ public class MapBlockLayout extends JPanel {
 
     public void setCurrentDisplaySize(int currentDisplaySize) {
         this.currentDisplaySize = currentDisplaySize;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        int x = e.getX() / (currentDisplaySize * 3*8);
+        int y = e.getY() / (currentDisplaySize * 3*8);
+        int blockIndex = y*(tilesPerRow/3) + x;
+        if(e.getButton()==MouseEvent.BUTTON1){
+            MapBlockLayout.selectedBlockIndex0 = blockIndex;
+        }else if(e.getButton()==MouseEvent.BUTTON3){
+            MapBlockLayout.selectedBlockIndex1 = blockIndex;
+        }
+        System.out.println("Blockset press "+e.getButton()+" "+x+" - "+y);
+    }    
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
     }
     
     

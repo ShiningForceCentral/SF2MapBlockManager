@@ -387,7 +387,7 @@ public class DisassemblyManager {
             }
             tile.setId(value&0x3FF);
             outputTiles[i] = tile;
-            System.out.println(i+"="+tile.getId()+", "+tile.isHighPriority()+" "+tile.ishFlip()+" "+tile.isvFlip());
+            //System.out.println(i+"="+tile.getId()+", "+tile.isHighPriority()+" "+tile.ishFlip()+" "+tile.isvFlip());
         }
         MapBlock[] blocks = new MapBlock[outputTiles.length/9];
         for(int i=0;i<blocks.length;i++){

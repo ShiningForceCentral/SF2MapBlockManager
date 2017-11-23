@@ -32,10 +32,10 @@ import javax.imageio.ImageIO;
 public class PngManager {
     
     
-    public static void exportPng(MapBlock[] blocks, String filepath){
+    public static void exportPng(MapBlock[] blocks, String filepath, int blocksPerRow){
         try {
             //System.out.println("com.sfc.sf2.mapblock.io.PngManager.exportPng() - Exporting PNG files ...");
-            //writePngFile(mapblock.getTiles(),filepath);    
+            writePngFile(blocks,filepath,blocksPerRow);    
             //System.out.println("com.sfc.sf2.mapblock.io.PngManager.exportPng() - PNG files exported.");
         } catch (Exception ex) {
             Logger.getLogger(PngManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -44,10 +44,10 @@ public class PngManager {
                 
     }    
     
-    public static void writePngFile(MapBlock[] blocks, String filepath){
+    public static void writePngFile(MapBlock[] blocks, String filepath, int blocksPerRow){
         try {
             //System.out.println("com.sfc.sf2.mapblock.io.PngManager.exportPng() - Exporting PNG file ...");
-            BufferedImage image = new MapBlockLayout().buildImage(blocks, 8, true);
+            BufferedImage image = new MapBlockLayout().buildImage(blocks, blocksPerRow, true);
             File outputfile = new File(filepath);
             //System.out.println("File path : "+outputfile.getAbsolutePath());
             ImageIO.write(image, "png", outputfile);
