@@ -21,6 +21,7 @@ public class MapBlock {
     private Tile[] tiles;
     
     private BufferedImage image;
+    private BufferedImage flagImage;
     
     public int getIndex() {
         return index;
@@ -66,5 +67,15 @@ public class MapBlock {
             return false;
         }
     }
+
+    public BufferedImage getFlagImage() {
+        return flagImage;
+    }
+
+    public void setFlagImage(BufferedImage flagImage) {
+        this.flagImage = flagImage;
+    }
+    
+    
     
 }
