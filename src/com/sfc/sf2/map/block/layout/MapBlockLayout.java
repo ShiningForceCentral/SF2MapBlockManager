@@ -141,6 +141,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
 
     public void setTilesPerRow(int tilesPerRow) {
         this.tilesPerRow = tilesPerRow;
+        this.redraw = true;
     }
 
     public int getCurrentDisplaySize() {
@@ -149,6 +150,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
 
     public void setCurrentDisplaySize(int currentDisplaySize) {
         this.currentDisplaySize = currentDisplaySize;
+        this.redraw = true;
     }
 
     @Override

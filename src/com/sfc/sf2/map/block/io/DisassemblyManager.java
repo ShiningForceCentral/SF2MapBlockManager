@@ -128,6 +128,8 @@ public class DisassemblyManager {
                 }
                 if(blockspath.toFile().exists()){
                      inputData = Files.readAllBytes(blockspath);
+                }else{
+                    System.err.println("ERROR - File not found : "+blocksPath);
                 }
                 
             }            
