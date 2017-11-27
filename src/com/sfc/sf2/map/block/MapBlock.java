@@ -21,7 +21,8 @@ public class MapBlock {
     private Tile[] tiles;
     
     private BufferedImage image;
-    private BufferedImage flagImage;
+    private BufferedImage explorationFlagImage;
+    private BufferedImage interactionFlagImage;
     
     public int getIndex() {
         return index;
@@ -68,13 +69,23 @@ public class MapBlock {
         }
     }
 
-    public BufferedImage getFlagImage() {
-        return flagImage;
+    public BufferedImage getExplorationFlagImage() {
+        return explorationFlagImage;
     }
 
-    public void setFlagImage(BufferedImage flagImage) {
-        this.flagImage = flagImage;
+    public void setExplorationFlagImage(BufferedImage explorationFlagImage) {
+        this.explorationFlagImage = explorationFlagImage;
     }
+
+    public BufferedImage getInteractionFlagImage() {
+        return interactionFlagImage;
+    }
+
+    public void setInteractionFlagImage(BufferedImage interactionFlagImage) {
+        this.interactionFlagImage = interactionFlagImage;
+    }
+
+    
     
     
     
