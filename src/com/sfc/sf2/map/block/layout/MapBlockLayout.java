@@ -7,6 +7,7 @@ package com.sfc.sf2.map.block.layout;
 
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
+import com.sfc.sf2.map.block.gui.BlockSlotPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -26,6 +27,9 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     public static int selectedBlockIndex0;
     public static int selectedBlockIndex1;
     
+    private BlockSlotPanel leftSlotBlockPanel;
+    private BlockSlotPanel rightSlotBlockPanel;
+    
     private static final int DEFAULT_TILES_PER_ROW = 3;
     
     private int tilesPerRow = DEFAULT_TILES_PER_ROW;
@@ -34,7 +38,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
 
     private BufferedImage currentImage;
     private boolean redraw = true;
-    private int renderCounter = 0;    
+    private int renderCounter = 0;  
     
 
     public MapBlockLayout() {
@@ -164,10 +168,16 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         int blockIndex = y*(tilesPerRow/3) + x;
         if(e.getButton()==MouseEvent.BUTTON1){
             MapBlockLayout.selectedBlockIndex0 = blockIndex;
+            leftSlotBlockPanel.setBlockImage(blocks[blockIndex].getImage());
+            leftSlotBlockPanel.revalidate();
+            leftSlotBlockPanel.repaint();
         }else if(e.getButton()==MouseEvent.BUTTON3){
             MapBlockLayout.selectedBlockIndex1 = blockIndex;
+            rightSlotBlockPanel.setBlockImage(blocks[blockIndex].getImage());
+            rightSlotBlockPanel.revalidate();
+            rightSlotBlockPanel.repaint();
         }
-        System.out.println("Blockset press "+e.getButton()+" "+x+" - "+y);
+        //System.out.println("Blockset press "+e.getButton()+" "+x+" - "+y);
     }    
 
     @Override
@@ -188,6 +198,22 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
 
     @Override
     public void mouseMoved(MouseEvent e) {
+    }
+
+    public BlockSlotPanel getLeftSlotBlockPanel() {
+        return leftSlotBlockPanel;
+    }
+
+    public void setLeftSlotBlockPanel(BlockSlotPanel leftSlotBlockPanel) {
+        this.leftSlotBlockPanel = leftSlotBlockPanel;
+    }
+
+    public BlockSlotPanel getRightSlotBlockPanel() {
+        return rightSlotBlockPanel;
+    }
+
+    public void setRightSlotBlockPanel(BlockSlotPanel rightSlotBlockPanel) {
+        this.rightSlotBlockPanel = rightSlotBlockPanel;
     }
     
     
