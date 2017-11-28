@@ -168,14 +168,18 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         int blockIndex = y*(tilesPerRow/3) + x;
         if(e.getButton()==MouseEvent.BUTTON1){
             MapBlockLayout.selectedBlockIndex0 = blockIndex;
-            leftSlotBlockPanel.setBlockImage(blocks[blockIndex].getImage());
-            leftSlotBlockPanel.revalidate();
-            leftSlotBlockPanel.repaint();
+            if(leftSlotBlockPanel!=null){
+                leftSlotBlockPanel.setBlockImage(blocks[blockIndex].getImage());
+                leftSlotBlockPanel.revalidate();
+                leftSlotBlockPanel.repaint();
+            }
         }else if(e.getButton()==MouseEvent.BUTTON3){
             MapBlockLayout.selectedBlockIndex1 = blockIndex;
-            rightSlotBlockPanel.setBlockImage(blocks[blockIndex].getImage());
-            rightSlotBlockPanel.revalidate();
-            rightSlotBlockPanel.repaint();
+            if(rightSlotBlockPanel!=null){
+                rightSlotBlockPanel.setBlockImage(blocks[blockIndex].getImage());
+                rightSlotBlockPanel.revalidate();
+                rightSlotBlockPanel.repaint();
+            }
         }
         //System.out.println("Blockset press "+e.getButton()+" "+x+" - "+y);
     }    

@@ -477,7 +477,12 @@ public class DisassemblyManager {
                 }else {
                     Tile nextTilesetTile = null;
                     if(previousTile.ishFlip()){
-                        nextTilesetTile = tileset[previousTile.getId()-1];
+                        int index = previousTile.getId()-1;
+                        if(index<0){
+                            System.err.println("WARNING - While pointing to previous tile from tileset, had to put tile value 0 instead of this one : "+index);
+                            index = 0;
+                        }
+                        nextTilesetTile = tileset[index];
                     }else{
                         nextTilesetTile = tileset[previousTile.getId()+1];
                     }
