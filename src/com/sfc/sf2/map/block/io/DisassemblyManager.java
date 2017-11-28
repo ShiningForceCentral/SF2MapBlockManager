@@ -484,7 +484,12 @@ public class DisassemblyManager {
                         }
                         nextTilesetTile = tileset[index];
                     }else{
-                        nextTilesetTile = tileset[previousTile.getId()+1];
+                        int index = previousTile.getId()+1;
+                        if(index>=tileset.length){
+                            System.err.println("WARNING - While pointing to previous tile from tileset, had to put tile value "+(tileset.length-1)+" instead of this one : "+index);
+                            index = tileset.length-1;
+                        }                        
+                        nextTilesetTile = tileset[index];
                     }
                     if(nextTilesetTile.getId() == (tile.getId())
                             && previousTile.isHighPriority() == tile.isHighPriority()
