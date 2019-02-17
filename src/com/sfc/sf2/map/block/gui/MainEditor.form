@@ -487,7 +487,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField10">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="D:\u005cSEGADEV\u005cGITHUB\u005cSF2DISASM\u005cdisasm\u005cdata\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset000.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value="..\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset000.bin" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField10ActionPerformed"/>
@@ -505,7 +505,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField12">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="D:\u005cSEGADEV\u005cGITHUB\u005cSF2DISASM\u005cdisasm\u005cdata\u005cgraphics\u005cmaps\u005cmappalettes\u005cmappalette00.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value="..\u005cgraphics\u005cmaps\u005cmappalettes\u005cmappalette00.bin" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField12ActionPerformed"/>
@@ -526,7 +526,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField13">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="D:\u005cSEGADEV\u005cGITHUB\u005cSF2DISASM\u005cdisasm\u005cdata\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset037.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value="..\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset037.bin" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField13ActionPerformed"/>
@@ -547,7 +547,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField16">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="D:\u005cSEGADEV\u005cGITHUB\u005cSF2DISASM\u005cdisasm\u005cdata\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset043.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value="..\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset043.bin" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField16ActionPerformed"/>
@@ -568,7 +568,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField17">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="D:\u005cSEGADEV\u005cGITHUB\u005cSF2DISASM\u005cdisasm\u005cdata\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset053.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value="..\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset053.bin" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField17ActionPerformed"/>
@@ -589,7 +589,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField18">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="D:\u005cSEGADEV\u005cGITHUB\u005cSF2DISASM\u005cdisasm\u005cdata\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset066.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value="..\u005cgraphics\u005cmaps\u005cmaptilesets\u005cmaptileset066.bin" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField18ActionPerformed"/>
@@ -610,7 +610,7 @@
                             </Component>
                             <Component class="javax.swing.JTextField" name="jTextField19">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="D:\u005cSEGADEV\u005cGITHUB\u005cSF2DISASM\u005cdisasm\u005cdata\u005cmaps\u005centries\u005cmap03\u005c0-blocks.bin" containsInvalidXMLChars="true"/>
+                                <Property name="text" type="java.lang.String" value=".\u005centries\u005cmap03\u005c0-blocks.bin" containsInvalidXMLChars="true"/>
                               </Properties>
                               <Events>
                                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField19ActionPerformed"/>
