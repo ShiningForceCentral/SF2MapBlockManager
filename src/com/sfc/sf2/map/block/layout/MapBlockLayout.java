@@ -64,6 +64,9 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         renderCounter++;
         System.out.println("Blockset render "+renderCounter);      
         this.blocks = blocks;
+        if(pngExport){
+            redraw = true;
+        }
         if(redraw){
             int blocksPerRow = tilesPerRow / 3;
             int imageHeight = blocks.length*3*8/blocksPerRow;
@@ -93,8 +96,10 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
                 }
                 graphics.drawImage(blockImage, baseX*3*8, baseY*3*8, null);
             }
-            redraw = false;
-            currentImage = resize(currentImage);
+            if(!pngExport){
+                currentImage = resize(currentImage);
+                redraw = false;
+            }
         }          
         return currentImage;
     }

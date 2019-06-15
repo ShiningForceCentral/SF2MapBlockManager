@@ -56,8 +56,7 @@ public class MapBlock {
         this.image = image;
     }
     
-    @Override
-    public boolean equals(Object other){
+    public boolean equalsIgnoreTiles(Object other){
         if (other == null) return false;
         if (other == this) return true;
         if (!(other instanceof MapBlock))return false;
@@ -67,6 +66,23 @@ public class MapBlock {
         }else{
             return false;
         }
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        if(this==obj){
+            return true;
+        }
+        if(obj==null || obj.getClass() != this.getClass()){
+            return false;
+        }
+        MapBlock mb = (MapBlock) obj;
+        for(int i=0;i<this.tiles.length;i++){
+            if(!this.tiles[i].equals(mb.getTiles()[i])){
+                return false;
+            }
+        }
+        return true;
     }
 
     public BufferedImage getExplorationFlagImage() {

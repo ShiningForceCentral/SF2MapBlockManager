@@ -39,6 +39,14 @@ public class MapBlockManager {
         //graphicsManager.setTiles(tiles);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Disassembly imported.");
     }
+       
+    public void importDisassembly(String palettePath, String tileset1Path, String tileset2Path, String tileset3Path, String tileset4Path, String tileset5Path, String blocksPath, String animTilesetPath, int animTilesetStart, int animTilesetLength, int animTilesetDest){
+        System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Importing disassembly ...");
+        blocks = disassemblyManager.importDisassembly(palettePath, tileset1Path, tileset2Path, tileset3Path, tileset4Path, tileset5Path, blocksPath, animTilesetPath, animTilesetStart, animTilesetLength, animTilesetDest);
+        tiles = disassemblyManager.getTileset();
+        //graphicsManager.setTiles(tiles);
+        System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Disassembly imported.");
+    }
     
     public void exportDisassembly(String graphicsPath){
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Exporting disassembly ...");
