@@ -71,7 +71,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
             int blocksPerRow = tilesPerRow / 3;
             int imageHeight = blocks.length*3*8/blocksPerRow;
             Color[] palette = blocks[0].getTiles()[0].getPalette();
-            palette[0] = new Color(255, 255, 255, 0);
+            //palette[0] = new Color(255, 255, 255, 0);
             IndexColorModel icm = buildIndexColorModel(palette);
             currentImage = new BufferedImage(tilesPerRow*8, imageHeight , BufferedImage.TYPE_BYTE_INDEXED, icm);
             Graphics graphics = currentImage.getGraphics(); 
@@ -109,22 +109,22 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         byte[] greens = new byte[16];
         byte[] blues = new byte[16];
         byte[] alphas = new byte[16];
-        reds[0] = (byte)0xFF;
-        greens[0] = (byte)0xFF;
-        blues[0] = (byte)0xFF;
-        alphas[0] = 0;
-        for(int i=1;i<16;i++){
+        //reds[0] = (byte)0xFF;
+        //greens[0] = (byte)0xFF;
+        //blues[0] = (byte)0xFF;
+        for(int i=0;i<16;i++){
             reds[i] = (byte)colors[i].getRed();
             greens[i] = (byte)colors[i].getGreen();
             blues[i] = (byte)colors[i].getBlue();
             alphas[i] = (byte)0xFF;
         }
-        IndexColorModel icm = new IndexColorModel(4,16,reds,greens,blues,alphas);
+        alphas[0] = 0;
+        IndexColorModel icm = new IndexColorModel(4,16,reds,greens,blues,0);
         return icm;
     }    
     
     private BufferedImage resize(BufferedImage image){
-        BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_BYTE_INDEXED, (IndexColorModel)image.getColorModel());
         Graphics g = newImage.getGraphics();
         g.drawImage(image, 0, 0, image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, null);
         g.dispose();

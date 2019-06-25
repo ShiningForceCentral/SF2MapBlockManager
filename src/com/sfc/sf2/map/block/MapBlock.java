@@ -78,11 +78,23 @@ public class MapBlock {
         }
         MapBlock mb = (MapBlock) obj;
         for(int i=0;i<this.tiles.length;i++){
-            if(!this.tiles[i].equals(mb.getTiles()[i])){
+            if(!this.tiles[i].equalsWithPriority(mb.getTiles()[i])){
                 return false;
             }
         }
         return true;
+    }
+    
+    @Override 
+    public MapBlock clone(){
+        MapBlock clone = new MapBlock();
+        clone.setIndex(this.index);
+        clone.setFlags(this.flags);
+        clone.setTiles(this.tiles.clone());
+        clone.setImage(this.image);
+        clone.setExplorationFlagImage(this.explorationFlagImage);
+        clone.setInteractionFlagImage(this.interactionFlagImage);
+        return clone;
     }
 
     public BufferedImage getExplorationFlagImage() {

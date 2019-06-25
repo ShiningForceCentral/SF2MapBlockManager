@@ -66,7 +66,7 @@ public class DisassemblyManager {
             if(palettepath.toFile().exists()){
                 byte[] paletteData = Files.readAllBytes(palettepath);
                 palette = PaletteDecoder.parsePalette(paletteData);
-                palette[0] = new Color(255, 255, 255, 0);
+                //palette[0] = new Color(255, 255, 255, 0);
                 Tile emptyTile = new Tile();
                 emptyTile.setPalette(palette);
                 emptyTile.setPixels(new int[8][8]);
