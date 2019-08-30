@@ -69,7 +69,8 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         }
         if(redraw){
             int blocksPerRow = tilesPerRow / 3;
-            int imageHeight = blocks.length*3*8/blocksPerRow;
+            int blockHeight = blocks.length/blocksPerRow + ((blocks.length%blocksPerRow!=0)?1:0);
+            int imageHeight = blockHeight*3*8;
             Color[] palette = blocks[0].getTiles()[0].getPalette();
             //palette[0] = new Color(255, 255, 255, 0);
             IndexColorModel icm = buildIndexColorModel(palette);
