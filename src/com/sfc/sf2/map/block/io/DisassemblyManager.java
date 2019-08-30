@@ -447,7 +447,7 @@ public class DisassemblyManager {
             byte[] blockBytes = produceBlockBytes(blocks);
             Path graphicsFilePath = Paths.get(filePath);
             Files.write(graphicsFilePath,blockBytes);
-            System.out.println(blockBytes.length + " bytes into " + graphicsFilePath);
+            System.out.println(blocks.length+" Blocks / "+ blockBytes.length + " bytes into " + graphicsFilePath);
         } catch (Exception ex) {
             Logger.getLogger(DisassemblyManager.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
@@ -497,14 +497,14 @@ public class DisassemblyManager {
                     if(previousTile.ishFlip()){
                         int index = previousTile.getId()-1;
                         if(index<0){
-                            System.err.println("WARNING - While pointing to previous tile from tileset, had to put tile value 0 instead of this one : "+index);
+                            //System.err.println("WARNING - While pointing to previous tile from tileset, had to put tile value 0 instead of this one : "+index);
                             index = 0;
                         }
                         nextTilesetTile = tileset[index];
                     }else{
                         int index = previousTile.getId()+1;
                         if(index>=tileset.length){
-                            System.err.println("WARNING - While pointing to previous tile from tileset, had to put tile value "+(tileset.length-1)+" instead of this one : "+index);
+                            //System.err.println("WARNING - While pointing to previous tile from tileset, had to put tile value "+(tileset.length-1)+" instead of this one : "+index);
                             index = tileset.length-1;
                         }                        
                         nextTilesetTile = tileset[index];
