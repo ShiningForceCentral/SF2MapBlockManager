@@ -96,6 +96,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
                 }
                 graphics.drawImage(blockImage, baseX*3*8, baseY*3*8, null);
             }
+            graphics.dispose();
             if(!pngExport){
                 currentImage = resize(currentImage);
                 redraw = false;
