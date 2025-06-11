@@ -56,6 +56,10 @@ public class DisassemblyManager {
     public MapBlock[] importDisassembly(String palettePath, String[] tilesetPaths, String blocksPath, String animTilesetPath, int animTilesetStart, int animTilesetLength, int animTilesetDest){
         System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - Importing disassembly ...");
         MapBlock[] blocks = null;
+        inputData = null;
+        inputCursor = -2;
+        inputBitCursor = 16;
+        inputWord = 0;
 
         try{
             Path palettepath = Paths.get(palettePath);

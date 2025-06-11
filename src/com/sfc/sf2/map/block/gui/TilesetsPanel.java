@@ -8,9 +8,11 @@ package com.sfc.sf2.map.block.gui;
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.map.block.Tileset;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -29,12 +31,17 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
     
     private BlockSlotPanel leftSlotTilePanel;
     private BlockSlotPanel rightSlotTilePanel;
+    private int leftSlotIndex;
+    private int rightSlotIndex;
     
-    private int tilesPerRow = 10;
-    private Tileset tileset;
+    private static final int DEFAULT_TILES_PER_ROW = 24;
+    
+    private int tilesPerRow = DEFAULT_TILES_PER_ROW;
     private Tileset[] tilesets;
+    private int selectedTileset = 0;
     private int currentDisplaySize = 1;
-
+    private boolean drawGrid = true;
+    
     private BufferedImage currentImage;
     private boolean redraw = true;
     private int renderCounter = 0;  
@@ -53,7 +60,7 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
     
     public BufferedImage buildImage() {
         if(redraw){
-            currentImage = buildImage(this.tileset, this.tilesPerRow);
+            currentImage = buildImage(this.tilesets[selectedTileset], this.tilesPerRow);
             setSize(currentImage.getWidth(), currentImage.getHeight());
         }
         return currentImage;
@@ -65,11 +72,10 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
         if (redraw && tileset != null) {
             Tile[] tiles = tileset.getTiles();
             int tileHeight = tiles.length/tilesPerRow + ((tiles.length%tilesPerRow!=0)?1:0);
-            int imageHeight = tileHeight*8;
             Color[] palette = tiles[0].getPalette();
             IndexColorModel icm = buildIndexColorModel(palette);
-            currentImage = new BufferedImage(tilesPerRow*8, imageHeight , BufferedImage.TYPE_BYTE_INDEXED, icm);
-            Graphics graphics = currentImage.getGraphics(); 
+            currentImage = new BufferedImage(tilesPerRow*8+1, tileHeight*8+1, BufferedImage.TYPE_BYTE_INDEXED, icm);
+            Graphics2D graphics = (Graphics2D)currentImage.getGraphics(); 
             for(int i=0; i<tiles.length; i++) {
                 int baseX = i % tilesPerRow;
                 int baseY = i / tilesPerRow;
@@ -77,6 +83,18 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
                 BufferedImage tileImage = tile.getImage();
                 if(tileImage != null) {
                     graphics.drawImage(tileImage, baseX*8, baseY*8, null);
+                }
+            }
+            if (drawGrid) {
+                int width = tilesPerRow+1;
+                int height = tiles.length/tilesPerRow+1;
+                graphics.setColor(Color.BLACK);
+                graphics.setStroke(new BasicStroke(1));
+                for (int i = 0; i <= width; i++) {
+                    graphics.drawLine(i*8, 0, i*8, height*8);
+                }
+                for (int j = 0; j <= height; j++) {
+                    graphics.drawLine(0, j*8, width*8, j*8);
                 }
             }
             graphics.dispose();
@@ -121,8 +139,15 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
 
     public void setTilesets(Tileset[] tilesets) {
         this.tilesets = tilesets;
-        if (tileset == null && tilesets != null && tilesets.length > 0)
-            tileset = tilesets[0];
+    }
+    
+    public int getSelectedTileset() {
+        return selectedTileset;
+    }
+
+    public void setSelectedTileset(int selectedTileset) {
+        this.selectedTileset = selectedTileset;
+        this.redraw = true;
     }
     
     public int getTilesPerRow() {
@@ -143,26 +168,35 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
         this.redraw = true;
     }
 
+    public boolean getDrawGrid() {
+        return drawGrid;
+    }
+
+    public void setDrawGrid(boolean drawGrid) {
+        this.drawGrid = drawGrid;
+        this.redraw = true;
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        int x = e.getX() / (currentDisplaySize * 3*8);
-        int y = e.getY() / (currentDisplaySize * 3*8);
-        int blockIndex = y*(tilesPerRow/3) + x;
-        /*if(e.getButton()==MouseEvent.BUTTON1){
-            MapBlockLayout.selectedBlockIndex0 = blockIndex;
-            if(leftSlotTilePanel!=null){
-                leftSlotTilePanel.setBlockImage(blocks[blockIndex].getImage());
+        int x = e.getX() / (currentDisplaySize*8);
+        int y = e.getY() / (currentDisplaySize*8);
+        int tileIndex = y*(tilesPerRow)+x;
+        /*if (e.getButton() == MouseEvent.BUTTON1) {
+            leftSlotIndex = tileIndex;
+            if (leftSlotTilePanel != null) {
+                leftSlotTilePanel.setBlockImage(tilesets[selectedTileset].getTiles()[tileIndex].getImage());
                 leftSlotTilePanel.revalidate();
                 leftSlotTilePanel.repaint();
             }
-        }else if(e.getButton()==MouseEvent.BUTTON3){
-            MapBlockLayout.selectedBlockIndex1 = blockIndex;
-            if(rightSlotTilePanel!=null){
-                rightSlotTilePanel.setBlockImage(blocks[blockIndex].getImage());
+        } else if(e.getButton() == MouseEvent.BUTTON3){
+            rightSlotIndex = tileIndex;
+            if (rightSlotTilePanel != null) {
+                rightSlotTilePanel.setBlockImage(tilesets[selectedTileset].getTiles()[tileIndex].getImage());
                 rightSlotTilePanel.revalidate();
                 rightSlotTilePanel.repaint();
             }
