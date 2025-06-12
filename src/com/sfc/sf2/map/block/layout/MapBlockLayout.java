@@ -77,7 +77,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
             Color[] palette = blocks[0].getTiles()[0].getPalette();
             //palette[0] = new Color(255, 255, 255, 0);
             IndexColorModel icm = buildIndexColorModel(palette);
-            currentImage = new BufferedImage(blocksPerRow*3*8+1, blockHeight*3*8+1, BufferedImage.TYPE_BYTE_INDEXED, icm);
+            currentImage = new BufferedImage(blocksPerRow*3*8+1, blockHeight*3*8+1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D graphics = (Graphics2D)currentImage.getGraphics(); 
             for(int i=0;i<blocks.length;i++){
                 int baseX = (i%blocksPerRow)*3*8;
@@ -154,7 +154,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     }
     
     private BufferedImage resize(BufferedImage image){
-        BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_BYTE_INDEXED, (IndexColorModel)image.getColorModel());
+        BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_INT_ARGB);
         Graphics g = newImage.getGraphics();
         g.drawImage(image, 0, 0, image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, null);
         g.dispose();

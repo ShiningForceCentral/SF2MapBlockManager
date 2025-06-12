@@ -69,9 +69,7 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
         if (redraw && tileset != null) {
             Tile[] tiles = tileset.getTiles();
             int tileHeight = tiles.length/tilesPerRow + ((tiles.length%tilesPerRow!=0)?1:0);
-            Color[] palette = tiles[0].getPalette();
-            IndexColorModel icm = buildIndexColorModel(palette);
-            currentImage = new BufferedImage(tilesPerRow*8+1, tileHeight*8+1, BufferedImage.TYPE_BYTE_INDEXED, icm);
+            currentImage = new BufferedImage(tilesPerRow*8+1, tileHeight*8+1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D graphics = (Graphics2D)currentImage.getGraphics(); 
             for(int i=0; i<tiles.length; i++) {
                 int baseX = (i % tilesPerRow)*8;
@@ -118,7 +116,7 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
     }    
     
     private BufferedImage resize(BufferedImage image) {
-        BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_BYTE_INDEXED, (IndexColorModel)image.getColorModel());
+        BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_INT_ARGB);
         Graphics g = newImage.getGraphics();
         g.drawImage(image, 0, 0, image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, null);
         g.dispose();
