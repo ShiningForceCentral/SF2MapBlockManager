@@ -8,7 +8,6 @@ package com.sfc.sf2.map.block.layout;
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.map.block.gui.BlockSlotPanel;
-import com.sfc.sf2.map.block.gui.EditableBlockSlotPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -172,6 +171,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
 
     public void setBlocks(MapBlock[] blocks) {
         this.blocks = blocks;
+        this.redraw = true;
     }
     
     public int getBlocksPerRow() {

@@ -192,7 +192,7 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
         }
     }
     
-    Tile cloneTile(Tile tile, boolean isHighPriority) {
+    private Tile cloneTile(Tile tile, boolean isHighPriority) {
         Tile newTile = new Tile();
         newTile.setId(tile.getId());
         newTile.setPalette(tile.getPalette());

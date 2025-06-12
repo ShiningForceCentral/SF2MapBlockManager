@@ -1730,8 +1730,8 @@
                             </Container>
                             <Component class="javax.swing.JButton" name="jButton36">
                               <Properties>
-                                <Property name="text" type="java.lang.String" value="Remove selected block"/>
                                 <Property name="toolTipText" type="java.lang.String" value=""/>
+                                <Property name="label" type="java.lang.String" value="Remove last block"/>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                                   <Insets value="[2, 5, 3, 5]"/>
                                 </Property>

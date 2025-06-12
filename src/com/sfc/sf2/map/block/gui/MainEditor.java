@@ -5,6 +5,8 @@
  */
 package com.sfc.sf2.map.block.gui;
 
+import com.sfc.sf2.graphics.Tile;
+import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.map.block.MapBlockManager;
 import com.sfc.sf2.map.block.Tileset;
 import com.sfc.sf2.map.block.layout.MapBlockLayout;
@@ -1226,8 +1228,8 @@ public class MainEditor extends javax.swing.JFrame {
                         .addContainerGap())
                 );
 
-                jButton36.setText("Remove selected block");
                 jButton36.setToolTipText("");
+                jButton36.setLabel("Remove last block");
                 jButton36.setMargin(new java.awt.Insets(2, 5, 3, 5));
                 jButton36.addActionListener(new java.awt.event.ActionListener() {
                     public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1418,6 +1420,7 @@ public class MainEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton25ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        mapblockManager.setBlocks(mapblockLayout.getBlocks());
         Path path = Path.of(jTextField26.getText(), jTextField25.getText());
         mapblockManager.exportDisassembly(path.toString());
     }//GEN-LAST:event_jButton4ActionPerformed
@@ -1594,14 +1597,32 @@ public class MainEditor extends javax.swing.JFrame {
         
         jPanel8.revalidate();
         jPanel8.repaint();
+        
+        MapBlock[] blocks = mapblockManager.getBlocks();
+        MapBlock[] newBlocks = new MapBlock[blocks.length];
+        System.arraycopy(blocks, 0, newBlocks, 0, blocks.length);
+        newBlocks[10] = cloneBlock(blocks[1]);
+        newBlocks[20] = cloneBlock(blocks[1]);
+        mapblockLayout.setBlocks(newBlocks);
     }
     
     private void jButton35ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton35ActionPerformed
-        // TODO add your handling code here:
+        MapBlock[] blocks = mapblockLayout.getBlocks();
+        MapBlock[] newBlocks = new MapBlock[blocks.length + 1];
+        System.arraycopy(blocks, 0, newBlocks, 0, blocks.length);
+        newBlocks[newBlocks.length - 1] = cloneBlock(blocks[3]);
+        mapblockLayout.setBlocks(newBlocks);
+        jPanel18.revalidate();
+        jPanel18.repaint();
     }//GEN-LAST:event_jButton35ActionPerformed
-
+    
     private void jButton36ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton36ActionPerformed
-        // TODO add your handling code here:
+        MapBlock[] blocks = mapblockLayout.getBlocks();
+        MapBlock[] newBlocks = new MapBlock[blocks.length - 1];
+        System.arraycopy(blocks, 0, newBlocks, 0, blocks.length - 1);
+        mapblockLayout.setBlocks(newBlocks);
+        jPanel18.revalidate();
+        jPanel18.repaint();
     }//GEN-LAST:event_jButton36ActionPerformed
 
     private void jComboBox5ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBox5ItemStateChanged
@@ -1684,6 +1705,33 @@ public class MainEditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jCheckBox5ItemStateChanged
 
+    private MapBlock cloneBlock(MapBlock block) {
+        MapBlock newBlock = new MapBlock();
+        newBlock.setIndex(block.getIndex());
+        newBlock.setFlags(block.getFlags());
+        Tile[] tiles = block.getTiles();
+        if (tiles != null) {
+            Tile[] newTiles = new Tile[tiles.length];
+            for (int i = 0; i < tiles.length; i++) {
+                newTiles[i] = cloneTile(tiles[i]);
+            }
+            tiles = newTiles;
+        }
+        newBlock.setTiles(tiles);
+        return newBlock;
+    }
+    
+    private Tile cloneTile(Tile tile) {
+        Tile newTile = new Tile();
+        newTile.setId(tile.getId());
+        newTile.setPalette(tile.getPalette());
+        newTile.setPixels(tile.getPixels());
+        newTile.setHighPriority(tile.isHighPriority());
+        newTile.sethFlip(tile.ishFlip());
+        newTile.setvFlip(tile.isvFlip());
+        return newTile;
+    }
+    
     /**
      * @param args the command line arguments
      */
