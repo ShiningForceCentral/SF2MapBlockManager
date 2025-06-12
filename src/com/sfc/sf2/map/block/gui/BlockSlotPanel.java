@@ -22,23 +22,31 @@ public class BlockSlotPanel extends JPanel {
     MapBlock block;
     boolean showPriority;
     
+    BufferedImage image;
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (block != null) {
-            g.drawImage(block.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);
-            if (showPriority) {
-                Tile[] tiles = block.getTiles();
-                for (int i = 0; i < tiles.length; i++) {
-                    if (tiles[i].isHighPriority()) {
-                        g.setColor(Color.YELLOW);
-                        g.drawOval((i%3)*8+3, (i/3)*3*8+3, 2, 2);
-                        g.setColor(Color.BLACK);
-                        g.drawOval((i%3)*8+2, (i/3)*3*8+2, 4, 4);
+            if (image == null) {
+                image = new BufferedImage(3*8, 3*8, BufferedImage.TYPE_INT_ARGB);
+                Graphics g2 = image.getGraphics();
+                g2.drawImage(block.getImage(), 0, 0, 3*8, 3*8, null);
+                if (showPriority) {
+                    Tile[] tiles = block.getTiles();
+                    for (int t = 0; t < tiles.length; t++) {
+                        if (tiles[t].isHighPriority()) {
+                            g2.setColor(Color.BLACK);
+                            g2.fillRect((t%3)*8+2, (t/3)*8+2, 4, 4);
+                            g2.setColor(Color.YELLOW);
+                            g2.fillRect((t%3)*8+3, (t/3)*8+3, 2, 2);
+                        }
                     }
                 }
+                g2.dispose();
             }
-        }        
+            g.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), null);
+        }
     }
     
     @Override
@@ -50,8 +58,9 @@ public class BlockSlotPanel extends JPanel {
         return block;
     }
 
-    public void setBlock(MapBlock blockImage) {
+    public void setBlock(MapBlock block) {
         this.block = block;
+        image = null;
         this.validate();
         this.repaint();
     }
@@ -62,6 +71,7 @@ public class BlockSlotPanel extends JPanel {
 
     public void setShowPriority(boolean showPriority) {
         this.showPriority = showPriority;
+        image = null;
         this.validate();
         this.repaint();
     }

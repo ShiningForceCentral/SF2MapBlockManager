@@ -5,6 +5,7 @@
  */
 package com.sfc.sf2.map.block.layout;
 
+import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.map.block.gui.BlockSlotPanel;
 import java.awt.BasicStroke;
@@ -37,6 +38,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     private MapBlock[] blocks;
     private int currentDisplaySize = 1;
     private boolean drawGrid = true;
+    private boolean showPriority = true;
 
     private BufferedImage currentImage;
     private boolean redraw = true;
@@ -77,8 +79,8 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
             currentImage = new BufferedImage(blocksPerRow*3*8+1, blockHeight*3*8+1, BufferedImage.TYPE_BYTE_INDEXED, icm);
             Graphics2D graphics = (Graphics2D)currentImage.getGraphics(); 
             for(int i=0;i<blocks.length;i++){
-                int baseX = i%blocksPerRow;
-                int baseY = i/blocksPerRow;
+                int baseX = (i%blocksPerRow)*3*8;
+                int baseY = (i/blocksPerRow)*3*8;
                 MapBlock block = blocks[i];
                 BufferedImage blockImage = block.getImage();
                 if(blockImage==null){
@@ -95,7 +97,19 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
                     blockGraphics.drawImage(block.getTiles()[8].getImage(), 2*8, 2*8, null);
                     block.setImage(blockImage);
                 }
-                graphics.drawImage(blockImage, baseX*3*8, baseY*3*8, null);
+                graphics.drawImage(blockImage, baseX, baseY, null);
+                
+                if (showPriority) {
+                    Tile[] tiles = block.getTiles();
+                    for (int t = 0; t < tiles.length; t++) {
+                        if (tiles[t].isHighPriority()) {
+                            graphics.setColor(Color.BLACK);
+                            graphics.fillRect(baseX+(t%3)*8+2, baseY+(t/3)*8+2, 4, 4);
+                            graphics.setColor(Color.YELLOW);
+                            graphics.fillRect(baseX+(t%3)*8+3, baseY+(t/3)*8+3, 2, 2);
+                        }
+                    }
+                }
             }
             if (drawGrid) {
                 int width = blocksPerRow+1;
@@ -203,6 +217,15 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         this.drawGrid = drawGrid;
         this.redraw = true;
     }
+    
+    public boolean getShowPriority() {
+        return showPriority;
+    }
+
+    public void setShowPriority(boolean showPriority) {
+        this.showPriority = showPriority;
+        this.redraw = true;
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -210,9 +233,9 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
 
     @Override
     public void mousePressed(MouseEvent e) {
-        int x = e.getX() / (currentDisplaySize * 3*8);
-        int y = e.getY() / (currentDisplaySize * 3*8);
-        int blockIndex = y*(blocksPerRow/3) + x;
+        int x = e.getX() / (currentDisplaySize*3*8);
+        int y = e.getY() / (currentDisplaySize*3*8);
+        int blockIndex = y*blocksPerRow+x;
         if(e.getButton()==MouseEvent.BUTTON1){
             MapBlockLayout.selectedBlockIndex0 = blockIndex;
             if(leftSlotBlockPanel!=null){
@@ -265,6 +288,4 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     public void setRightSlotBlockPanel(BlockSlotPanel rightSlotBlockPanel) {
         this.rightSlotBlockPanel = rightSlotBlockPanel;
     }
-    
-    
 }
