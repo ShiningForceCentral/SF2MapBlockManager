@@ -1389,11 +1389,19 @@ public class MainEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField26ActionPerformed
 
     private void jButton34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton34ActionPerformed
-        // TODO add your handling code here:
+        int returnVal = jFileChooser2.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = jFileChooser2.getSelectedFile();
+            jTextField26.setText(file.getAbsolutePath()+System.getProperty("file.separator"));
+        }
     }//GEN-LAST:event_jButton34ActionPerformed
 
     private void jButton33ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton33ActionPerformed
-        // TODO add your handling code here:
+        int returnVal = jFileChooser1.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = jFileChooser1.getSelectedFile();
+            jTextField25.setText(file.getAbsolutePath());
+        }
     }//GEN-LAST:event_jButton33ActionPerformed
 
     private void jTextField25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField25ActionPerformed
@@ -1405,11 +1413,19 @@ public class MainEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField24ActionPerformed
 
     private void jButton32ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton32ActionPerformed
-        // TODO add your handling code here:
+        int returnVal = jFileChooser1.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = jFileChooser1.getSelectedFile();
+            jTextField24.setText(file.getAbsolutePath());
+        }
     }//GEN-LAST:event_jButton32ActionPerformed
 
     private void jButton31ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton31ActionPerformed
-        // TODO add your handling code here:
+        int returnVal = jFileChooser1.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = jFileChooser1.getSelectedFile();
+            jTextField23.setText(file.getAbsolutePath());
+        }
     }//GEN-LAST:event_jButton31ActionPerformed
 
     private void jTextField23ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField23ActionPerformed
@@ -1417,7 +1433,11 @@ public class MainEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField23ActionPerformed
 
     private void jButton30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton30ActionPerformed
-        // TODO add your handling code here:
+        int returnVal = jFileChooser1.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = jFileChooser1.getSelectedFile();
+            jTextField22.setText(file.getAbsolutePath());
+        }
     }//GEN-LAST:event_jButton30ActionPerformed
 
     private void jTextField22ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField22ActionPerformed
@@ -1425,7 +1445,11 @@ public class MainEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField22ActionPerformed
 
     private void jButton29ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton29ActionPerformed
-        // TODO add your handling code here:
+        int returnVal = jFileChooser2.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = jFileChooser2.getSelectedFile();
+            jTextField21.setText(file.getAbsolutePath()+System.getProperty("file.separator"));
+        }
     }//GEN-LAST:event_jButton29ActionPerformed
 
     private void jTextField21ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField21ActionPerformed
