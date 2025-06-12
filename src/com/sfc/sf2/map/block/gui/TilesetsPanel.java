@@ -28,10 +28,9 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
     public static int selectedTileIndex0;
     public static int selectedTileIndex1;
     
+    private EditableBlockSlotPanel blockSlotPanel;
     private TileSlotPanel leftSlotTilePanel;
     private TileSlotPanel rightSlotTilePanel;
-    private int leftSlotIndex;
-    private int rightSlotIndex;
     
     private static final int DEFAULT_TILES_PER_ROW = 24;
     
@@ -40,13 +39,11 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
     private int selectedTileset = 0;
     private int currentDisplaySize = 1;
     private boolean drawGrid = true;
-    private boolean showPriority = true;
     
     private BufferedImage currentImage;
     private boolean redraw = true;
     private int renderCounter = 0;  
     
-
     public TilesetsPanel() {
        addMouseListener(this);
        addMouseMotionListener(this);
@@ -77,12 +74,12 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
             currentImage = new BufferedImage(tilesPerRow*8+1, tileHeight*8+1, BufferedImage.TYPE_BYTE_INDEXED, icm);
             Graphics2D graphics = (Graphics2D)currentImage.getGraphics(); 
             for(int i=0; i<tiles.length; i++) {
-                int baseX = i % tilesPerRow;
-                int baseY = i / tilesPerRow;
+                int baseX = (i % tilesPerRow)*8;
+                int baseY = (i / tilesPerRow)*8;
                 Tile tile = tiles[i];
                 BufferedImage tileImage = tile.getImage();
                 if(tileImage != null) {
-                    graphics.drawImage(tileImage, baseX*8, baseY*8, null);
+                    graphics.drawImage(tileImage, baseX, baseY, null);
                 }
             }
             if (drawGrid) {
@@ -126,7 +123,7 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
         g.drawImage(image, 0, 0, image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, null);
         g.dispose();
         return newImage;
-    }    
+    }
     
     @Override
     public Dimension getPreferredSize() {
@@ -176,15 +173,6 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
         this.drawGrid = drawGrid;
         this.redraw = true;
     }
-    
-    public boolean getShowPriority() {
-        return showPriority;
-    }
-
-    public void setShowPriority(boolean showPriority) {
-        this.showPriority = showPriority;
-        this.redraw = true;
-    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -196,14 +184,12 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
         int y = e.getY() / (currentDisplaySize*8);
         int tileIndex = y*(tilesPerRow)+x;
         if (e.getButton() == MouseEvent.BUTTON1) {
-            leftSlotIndex = tileIndex;
             if (leftSlotTilePanel != null) {
                 leftSlotTilePanel.setTile(tilesets[selectedTileset].getTiles()[tileIndex]);
                 leftSlotTilePanel.revalidate();
                 leftSlotTilePanel.repaint();
             }
         } else if(e.getButton() == MouseEvent.BUTTON3){
-            rightSlotIndex = tileIndex;
             if (rightSlotTilePanel != null) {
                 rightSlotTilePanel.setTile(tilesets[selectedTileset].getTiles()[tileIndex]);
                 rightSlotTilePanel.revalidate();
@@ -230,6 +216,14 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
 
     @Override
     public void mouseMoved(MouseEvent e) {
+    }
+
+    public EditableBlockSlotPanel getBlockSlotPanel() {
+        return blockSlotPanel;
+    }
+
+    public void setBlockSlotPanel(EditableBlockSlotPanel blockSlotPanel) {
+        this.blockSlotPanel = blockSlotPanel;
     }
 
     public TileSlotPanel getLeftSlotBlockPanel() {

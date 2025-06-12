@@ -8,6 +8,7 @@ package com.sfc.sf2.map.block.layout;
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.map.block.gui.BlockSlotPanel;
+import com.sfc.sf2.map.block.gui.EditableBlockSlotPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -38,7 +39,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     private MapBlock[] blocks;
     private int currentDisplaySize = 1;
     private boolean drawGrid = true;
-    private boolean showPriority = true;
+    private boolean showPriority = false;
 
     private BufferedImage currentImage;
     private boolean redraw = true;
@@ -96,6 +97,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
                     blockGraphics.drawImage(block.getTiles()[7].getImage(), 1*8, 2*8, null);
                     blockGraphics.drawImage(block.getTiles()[8].getImage(), 2*8, 2*8, null);
                     block.setImage(blockImage);
+                    blockGraphics.dispose();
                 }
                 graphics.drawImage(blockImage, baseX, baseY, null);
                 
@@ -149,7 +151,7 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         alphas[0] = 0;
         IndexColorModel icm = new IndexColorModel(4,16,reds,greens,blues,0);
         return icm;
-    }    
+    }
     
     private BufferedImage resize(BufferedImage image){
         BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_BYTE_INDEXED, (IndexColorModel)image.getColorModel());
@@ -157,25 +159,6 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         g.drawImage(image, 0, 0, image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, null);
         g.dispose();
         return newImage;
-    }
-    
-    private void updateLeftSlot(){
-        if (leftSlotBlockPanel.getBlock() != null) {
-            BufferedImage img = new BufferedImage(3*8,3*8,BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2 = (Graphics2D)img.getGraphics();
-            leftSlotBlockPanel.paintComponents(g2);
-            if (drawGrid) {
-                g2.setColor(Color.BLACK);
-                g2.setStroke(new BasicStroke(1));
-                for (int i = 0; i <= 4; i++) {
-                    g2.drawLine(i*3*8, 0, i*3*8, 4*3*8);
-                    g2.drawLine(0, i*3*8, 4*3*8, i*3*8);
-                }
-            }
-            g2.dispose();
-            leftSlotBlockPanel.revalidate();
-            leftSlotBlockPanel.repaint(); 
-        }
     }
     
     @Override
@@ -226,6 +209,10 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         this.showPriority = showPriority;
         this.redraw = true;
     }
+    
+    public void mapBlocksChanged() {
+        this.redraw = true;
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -240,7 +227,8 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
             MapBlockLayout.selectedBlockIndex0 = blockIndex;
             if(leftSlotBlockPanel!=null){
                 leftSlotBlockPanel.setBlock(blocks[blockIndex]);
-                updateLeftSlot();
+                leftSlotBlockPanel.revalidate();
+                leftSlotBlockPanel.repaint(); 
             }
         }else if(e.getButton()==MouseEvent.BUTTON3){
             MapBlockLayout.selectedBlockIndex1 = blockIndex;
