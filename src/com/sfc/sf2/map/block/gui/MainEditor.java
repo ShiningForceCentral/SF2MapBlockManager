@@ -1621,13 +1621,6 @@ public class MainEditor extends javax.swing.JFrame {
         
         jPanel8.revalidate();
         jPanel8.repaint();
-        
-        MapBlock[] blocks = mapblockManager.getBlocks();
-        MapBlock[] newBlocks = new MapBlock[blocks.length];
-        System.arraycopy(blocks, 0, newBlocks, 0, blocks.length);
-        newBlocks[10] = cloneBlock(blocks[1]);
-        newBlocks[20] = cloneBlock(blocks[1]);
-        mapblockLayout.setBlocks(newBlocks);
     }
     
     private void jButton35ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton35ActionPerformed
