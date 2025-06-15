@@ -8,9 +8,12 @@ package com.sfc.sf2.map.block.io;
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.graphics.compressed.StackGraphicsDecoder;
-import static com.sfc.sf2.graphics.compressed.StackGraphicsEncoder.bytesToHex;
+import com.sfc.sf2.map.block.Tileset;
 import com.sfc.sf2.palette.graphics.PaletteDecoder;
 import java.awt.Color;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -19,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,26 +42,27 @@ public class DisassemblyManager {
     private Tile[] outputTiles = null;
     private StringBuilder debugSb = null;
     
-    Color[] palette = null;
-    Tile[] tileset = new Tile[128*5];
+    private Color[] palette = null;
+    private Tile[] tileset = new Tile[128*5];
+    private Tileset[] tilesets = new Tileset[5];
+    
     private Short[] rightTileHistory = new Short[0x800];
     private Short[] bottomTileHistory = new Short[0x800];
     
-    public MapBlock[] importDisassembly(String palettePath, String tileset1Path, String tileset2Path, String tileset3Path, String tileset4Path, String tileset5Path, String blocksPath){
-        return importDisassembly(palettePath, tileset1Path, tileset2Path, tileset3Path, tileset4Path, tileset5Path, blocksPath, null, 0, 0, 0);
+    public MapBlock[] importDisassembly(String palettePath, String[] tilesetPaths, String blocksPath){
+        return DisassemblyManager.this.importDisassembly(palettePath, tilesetPaths, blocksPath, null, 0, 0, 0);
     }
     
-    public MapBlock[] importDisassembly(String palettePath, String tileset1Path, String tileset2Path, String tileset3Path, String tileset4Path, String tileset5Path, String blocksPath, String animTilesetPath, int animTilesetStart, int animTilesetLength, int animTilesetDest){
+    public MapBlock[] importDisassembly(String palettePath, String[] tilesetPaths, String blocksPath, String animTilesetPath, int animTilesetStart, int animTilesetLength, int animTilesetDest){
         System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - Importing disassembly ...");
         MapBlock[] blocks = null;
+        inputData = null;
+        inputCursor = -2;
+        inputBitCursor = 16;
+        inputWord = 0;
 
         try{
             Path palettepath = Paths.get(palettePath);
-            Path tileset1path = Paths.get(tileset1Path);
-            Path tileset2path = Paths.get(tileset2Path);
-            Path tileset3path = Paths.get(tileset3Path);
-            Path tileset4path = Paths.get(tileset4Path);
-            Path tileset5path = Paths.get(tileset5Path);
             Path animtilesetpath = null;
             if(animTilesetPath!=null){
                 animtilesetpath = Paths.get(animTilesetPath);
@@ -74,60 +79,27 @@ public class DisassemblyManager {
                 for(int i=0;i<emptyTileset.length;i++){
                     emptyTileset[i] = emptyTile;
                 }
-                if(tileset1path.toFile().exists()){
-                    byte[] tileset1Data = Files.readAllBytes(tileset1path);
-                    if(tileset1Data.length>2){
-                        Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tileset1Data, palette);
-                        System.arraycopy(tileset, 0, this.tileset, 0*128, tileset.length);
-                    }else{
-                        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tileset1Data.length + " : " + tileset1Path);
+                for (int i = 0; i < tilesetPaths.length; i++) {
+                    if (i >= 5) {
+                        System.out.println("Too many tilesets defined. Ignoring excess. Count = " + tilesetPaths.length);
+                        break;
                     }
-                }else{
-                    System.arraycopy(emptyTileset, 0, tileset, 0*128, emptyTileset.length);
-                }
-                if(tileset2path.toFile().exists()){
-                    byte[] tileset2Data = Files.readAllBytes(tileset2path);
-                    if(tileset2Data.length>2){
-                        Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tileset2Data, palette);
-                        System.arraycopy(tileset, 0, this.tileset, 1*128, tileset.length);
+                    Path tilesetPath = Paths.get(tilesetPaths[i]);
+                    if(tilesetPath.toFile().exists()){
+                        byte[] tilesetData = Files.readAllBytes(tilesetPath);
+                        if(tilesetData.length>2){
+                            Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tilesetData, palette);
+                            System.arraycopy(tileset, 0, this.tileset, i*128, tileset.length);
+                            Tileset set = new Tileset();
+                            set.setName(tilesetPath.getFileName().toString());
+                            set.setTiles(tileset);
+                            tilesets[i] = set;
+                        }else{
+                            System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tilesetData.length + " : " + tilesetPath);
+                        }
                     }else{
-                        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tileset2Data.length + " : " + tileset2Path);
+                        System.arraycopy(emptyTileset, 0, tileset, 0*128, emptyTileset.length);
                     }
-                }else{
-                    System.arraycopy(emptyTileset, 0, tileset, 1*128, emptyTileset.length);
-                }
-                if(tileset3path.toFile().exists()){
-                    byte[] tileset3Data = Files.readAllBytes(tileset3path);
-                    if(tileset3Data.length>2){
-                        Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tileset3Data, palette);
-                        System.arraycopy(tileset, 0, this.tileset, 2*128, tileset.length);
-                    }else{
-                        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tileset3Data.length + " : " + tileset3Path);
-                    }
-                }else{
-                    System.arraycopy(emptyTileset, 0, tileset, 2*128, emptyTileset.length);
-                }
-                if(tileset4path.toFile().exists()){
-                    byte[] tileset4Data = Files.readAllBytes(tileset4path);
-                    if(tileset4Data.length>2){
-                        Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tileset4Data, palette);
-                        System.arraycopy(tileset, 0, this.tileset, 3*128, tileset.length);
-                    }else{
-                        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tileset4Data.length + " : " + tileset4Path);
-                    }
-                }else{
-                    System.arraycopy(emptyTileset, 0, tileset, 3*128, emptyTileset.length);
-                }
-                if(tileset5path.toFile().exists()){
-                    byte[] tileset5Data = Files.readAllBytes(tileset5path);
-                    if(tileset5Data.length>2){
-                        Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tileset5Data, palette);
-                        System.arraycopy(tileset, 0, this.tileset, 4*128, tileset.length);
-                    }else{
-                        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tileset5Data.length + " : " + tileset5Path);
-                    }
-                }else{
-                    System.arraycopy(emptyTileset, 0, tileset, 4*128, emptyTileset.length);
                 }
                 if(animtilesetpath!=null && animtilesetpath.toFile().exists()){
                     byte[] animTilesetData = Files.readAllBytes(animtilesetpath);
@@ -167,6 +139,152 @@ public class DisassemblyManager {
                 
         System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - Disassembly imported.");
         return blocks;
+    }
+
+    public MapBlock[] importDisassembly(String incbinPath, String paletteEntriesPath, String tilesetEntriesPath, String tilesetsFilePath, String blocksPath) {
+        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassemblyFromEntryFiles() - Importing disassembly ...");
+        MapBlock[] mapBlocks = null;
+        String palettePath = "";
+        String[] tilesetPaths = {"","","","",""};
+        
+        int[] indexes;
+        try {
+            indexes = parseTilesetsFile(tilesetsFilePath); 
+            int paletteIndex = indexes[0];
+            
+            List<String> paletteFilenames = loadPaletteEntryFile(paletteEntriesPath);
+            if(paletteFilenames.isEmpty()){
+                System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassemblyFromEntryFiles() - ERROR : no palette file imported. Wrong path or filename prefix ?");
+            } else if(paletteIndex > paletteFilenames.size()){
+                System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassemblyFromEntryFiles() - ERROR : Index "+paletteIndex+" id superior to unmber of palette files found : "+paletteFilenames.size());
+            } else {
+                palettePath = incbinPath + System.getProperty("file.separator") + paletteFilenames.get(paletteIndex);
+                System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - Selected palette file : "+palettePath);
+            }
+
+            List<String> tilesetFilenames = loadTilesetEntryFile(tilesetEntriesPath);
+            if(tilesetFilenames.isEmpty()){
+                System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - ERROR : no tileset file imported. Wrong path or filename prefix ?");
+            } else {
+                for(int i=0;i<tilesetPaths.length;i++){
+                    if(indexes[i+1] > tilesetFilenames.size()){
+                        System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - ERROR for tileset "+(i+1)+" : Index "+indexes[i+1]+" id superior to unmber of tileset files found : "+tilesetFilenames.size());
+                    } else if(indexes[i+1]!=-1){
+                        tilesetPaths[i] = incbinPath + System.getProperty("file.separator") + tilesetFilenames.get(indexes[i+1]);
+                        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - Selected tileset "+(i+1)+" : "+tilesetPaths[i]);
+                    } else{
+                        System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - Tileset "+(i+1)+" is declared empty.");
+                    }
+                }
+            }
+            
+            mapBlocks = DisassemblyManager.this.importDisassembly(palettePath, tilesetPaths, blocksPath);
+        } catch(Exception e) {
+             System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassemblyFromEntryFiles() - Error while parsing map data : "+e);
+             e.printStackTrace();
+        }                
+        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassemblyFromEntryFiles() - Disassembly imported.");
+        return mapBlocks;
+    }
+    
+    public List<String> loadPaletteEntryFile(String filePath) {
+        
+        List<String> filepaths = new ArrayList();
+        try {
+            File entryFile = new File(filePath);
+            Scanner scan = new Scanner(entryFile);
+            while(scan.hasNext()){
+                String line = scan.nextLine();
+                if(line.contains("dc.l")){
+                    String pointer = line.substring(line.indexOf("dc.l")+5).trim();
+                    String filepath = null;
+                    Scanner filescan = new Scanner(entryFile);
+                    while(filescan.hasNext()){
+                        String pathline = filescan.nextLine();
+                        if(pathline.startsWith(pointer)){
+                            filepath = pathline.substring(pathline.indexOf("\"")+1, pathline.lastIndexOf("\""));
+                        }
+                    }
+                    filepaths.add(filepath);
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(DisassemblyManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return filepaths;
+    }
+    
+    public List<String> loadTilesetEntryFile(String filePath){
+        List<String> filepaths = new ArrayList();
+        try {
+            File entryFile = new File(filePath);
+            Scanner scan = new Scanner(entryFile);
+            while(scan.hasNext()){
+                String line = scan.nextLine();
+                if(line.contains("dc.l")){
+                    String pointer = line.substring(line.indexOf("dc.l")+5).trim();
+                    String filepath = null;
+                    Scanner filescan = new Scanner(entryFile);
+                    while(filescan.hasNext()){
+                        String pathline = filescan.nextLine();
+                        if(pathline.startsWith(pointer)){
+                            filepath = pathline.substring(pathline.indexOf("\"")+1, pathline.lastIndexOf("\""));
+                        }
+                    }
+                    filepaths.add(filepath);
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(DisassemblyManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return filepaths;
+    }
+    
+    
+    private int[] parseTilesetsFile(String tilesetsFilePath) {
+        int[] indexes = new int[6];
+        try {
+            if(tilesetsFilePath.endsWith(".asm")){
+                Path tilesetspath = Paths.get(tilesetsFilePath);
+                File file = tilesetspath.toFile();
+//                if(!file.exists()){
+//                     System.err.println("ERROR - File not found : "+tilesetsFilePath);
+//                }else{                    
+                    Scanner scan = new Scanner(file);
+                    boolean inHeader = true;
+                    while(scan.hasNext()){
+                        String line = scan.nextLine();
+                        if(line.trim().startsWith("mapPalette")){
+                            indexes[0] = Integer.parseInt(line.trim().substring("mapPalette".length()).trim());
+                        }else if(line.trim().startsWith("mapTileset1")){
+                            indexes[1] = Integer.parseInt(line.trim().substring("mapTileset1".length()).trim());
+                        }else if(line.trim().startsWith("mapTileset2")){
+                            indexes[2] = Integer.parseInt(line.trim().substring("mapTileset2".length()).trim());
+                        }else if(line.trim().startsWith("mapTileset3")){
+                            indexes[3] = Integer.parseInt(line.trim().substring("mapTileset3".length()).trim());
+                        }else if(line.trim().startsWith("mapTileset4")){
+                            indexes[4] = Integer.parseInt(line.trim().substring("mapTileset4".length()).trim());
+                        }else if(line.trim().startsWith("mapTileset5")){
+                            indexes[5] = Integer.parseInt(line.trim().substring("mapTileset5".length()).trim());
+                        }
+                        
+//                    }                      
+                }
+            } else {
+                Path tilesetspath = Paths.get(tilesetsFilePath);
+
+                byte[] data = Files.readAllBytes(tilesetspath);
+                indexes[0] = (int)(data[0]);
+                indexes[1] = (int)(data[1]);
+                indexes[2] = (int)(data[2]);
+                indexes[3] = (int)(data[3]);
+                indexes[4] = (int)(data[4]);
+                indexes[5] = (int)(data[5]);                
+            }        
+        } catch (IOException ex) {
+            Logger.getLogger(DisassemblyManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return indexes;
     }
     
     private MapBlock[] parseBlockData(){
@@ -705,6 +823,14 @@ public class DisassemblyManager {
                 && a.isvFlip() == b.isvFlip());
     }
 
+    public Tileset[] getTilesets() {
+        return tilesets;
+    }
+
+    public void setTilesets(Tileset[] tilesets) {
+        this.tilesets = tilesets;
+    }
+
     public Tile[] getTileset() {
         return tileset;
     }
@@ -712,5 +838,4 @@ public class DisassemblyManager {
     public void setTileset(Tile[] tileset) {
         this.tileset = tileset;
     }
-    
 }

@@ -5,24 +5,24 @@
  */
 package com.sfc.sf2.map.block.gui;
 
-import com.sfc.sf2.map.block.MapBlock;
+import com.sfc.sf2.graphics.Tile;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JPanel;
 
 /**
  *
- * @author wiz
+ * @author TiMMy
  */
-public class BlockSlotPanel extends JPanel {
+public class TileSlotPanel extends JPanel {
     
-    MapBlock block;
+    Tile tile;
     
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (block != null) {
-            g.drawImage(block.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);
+        if (tile != null) {
+            g.drawImage(tile.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);
         }
     }
     
@@ -31,12 +31,12 @@ public class BlockSlotPanel extends JPanel {
         return new Dimension(getWidth(), getHeight());
     }
     
-    public MapBlock getBlock() {
-        return block;
+    public Tile getTile() {
+        return tile;
     }
 
-    public void setBlock(MapBlock block) {
-        this.block = block;
+    public void setTile(Tile tile) {
+        this.tile = tile;
         this.validate();
         this.repaint();
     }

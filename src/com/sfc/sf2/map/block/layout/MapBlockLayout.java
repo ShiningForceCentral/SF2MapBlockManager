@@ -8,9 +8,11 @@ package com.sfc.sf2.map.block.layout;
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.map.block.gui.BlockSlotPanel;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -30,11 +32,13 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     private BlockSlotPanel leftSlotBlockPanel;
     private BlockSlotPanel rightSlotBlockPanel;
     
-    private static final int DEFAULT_TILES_PER_ROW = 3;
+    private static final int DEFAULT_BLOCKS_PER_ROW = 8;
     
-    private int tilesPerRow = DEFAULT_TILES_PER_ROW;
+    private int blocksPerRow = DEFAULT_BLOCKS_PER_ROW;
     private MapBlock[] blocks;
     private int currentDisplaySize = 1;
+    private boolean drawGrid = true;
+    private boolean showPriority = false;
 
     private BufferedImage currentImage;
     private boolean redraw = true;
@@ -54,13 +58,13 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     
     public BufferedImage buildImage(){
         if(redraw){
-            currentImage = buildImage(this.blocks,this.tilesPerRow, false);
+            currentImage = buildImage(this.blocks, this.blocksPerRow, false);
             setSize(currentImage.getWidth(), currentImage.getHeight());
         }
         return currentImage;
     }
     
-    public BufferedImage buildImage(MapBlock[] blocks, int tilesPerRow, boolean pngExport){ 
+    public BufferedImage buildImage(MapBlock[] blocks, int blocksPerRow, boolean pngExport){ 
         renderCounter++;
         System.out.println("Blockset render "+renderCounter);      
         this.blocks = blocks;
@@ -68,17 +72,15 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
             redraw = true;
         }
         if(redraw){
-            int blocksPerRow = tilesPerRow / 3;
             int blockHeight = blocks.length/blocksPerRow + ((blocks.length%blocksPerRow!=0)?1:0);
-            int imageHeight = blockHeight*3*8;
             Color[] palette = blocks[0].getTiles()[0].getPalette();
             //palette[0] = new Color(255, 255, 255, 0);
             IndexColorModel icm = buildIndexColorModel(palette);
-            currentImage = new BufferedImage(tilesPerRow*8, imageHeight , BufferedImage.TYPE_BYTE_INDEXED, icm);
-            Graphics graphics = currentImage.getGraphics(); 
+            currentImage = new BufferedImage(blocksPerRow*3*8+1, blockHeight*3*8+1, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D graphics = (Graphics2D)currentImage.getGraphics(); 
             for(int i=0;i<blocks.length;i++){
-                int baseX = i%blocksPerRow;
-                int baseY = i/blocksPerRow;
+                int baseX = (i%blocksPerRow)*3*8;
+                int baseY = (i/blocksPerRow)*3*8;
                 MapBlock block = blocks[i];
                 BufferedImage blockImage = block.getImage();
                 if(blockImage==null){
@@ -94,9 +96,35 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
                     blockGraphics.drawImage(block.getTiles()[7].getImage(), 1*8, 2*8, null);
                     blockGraphics.drawImage(block.getTiles()[8].getImage(), 2*8, 2*8, null);
                     block.setImage(blockImage);
+                    blockGraphics.dispose();
                 }
-                graphics.drawImage(blockImage, baseX*3*8, baseY*3*8, null);
+                graphics.drawImage(blockImage, baseX, baseY, null);
+                
+                if (showPriority) {
+                    Tile[] tiles = block.getTiles();
+                    for (int t = 0; t < tiles.length; t++) {
+                        if (tiles[t].isHighPriority()) {
+                            graphics.setColor(Color.BLACK);
+                            graphics.fillRect(baseX+(t%3)*8+2, baseY+(t/3)*8+2, 4, 4);
+                            graphics.setColor(Color.YELLOW);
+                            graphics.fillRect(baseX+(t%3)*8+3, baseY+(t/3)*8+3, 2, 2);
+                        }
+                    }
+                }
             }
+            if (drawGrid) {
+                int width = blocksPerRow+1;
+                int height = blocks.length/blocksPerRow+1;
+                graphics.setColor(Color.BLACK);
+                graphics.setStroke(new BasicStroke(1));
+                for (int i = 0; i <= width; i++) {
+                    graphics.drawLine(i*3*8, 0, i*3*8, height*3*8);
+                }
+                for (int j = 0; j <= height; j++) {
+                    graphics.drawLine(0, j*3*8, width*3*8, j*3*8);
+                }
+            }
+            graphics.dispose();
             if(!pngExport){
                 currentImage = resize(currentImage);
                 redraw = false;
@@ -122,15 +150,15 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         alphas[0] = 0;
         IndexColorModel icm = new IndexColorModel(4,16,reds,greens,blues,0);
         return icm;
-    }    
+    }
     
     private BufferedImage resize(BufferedImage image){
-        BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_BYTE_INDEXED, (IndexColorModel)image.getColorModel());
+        BufferedImage newImage = new BufferedImage(image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, BufferedImage.TYPE_INT_ARGB);
         Graphics g = newImage.getGraphics();
         g.drawImage(image, 0, 0, image.getWidth()*currentDisplaySize, image.getHeight()*currentDisplaySize, null);
         g.dispose();
         return newImage;
-    }    
+    }
     
     @Override
     public Dimension getPreferredSize() {
@@ -143,14 +171,15 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
 
     public void setBlocks(MapBlock[] blocks) {
         this.blocks = blocks;
+        this.redraw = true;
     }
     
-    public int getTilesPerRow() {
-        return tilesPerRow;
+    public int getBlocksPerRow() {
+        return blocksPerRow;
     }
 
-    public void setTilesPerRow(int tilesPerRow) {
-        this.tilesPerRow = tilesPerRow;
+    public void setBlocksPerRow(int blocksPerRow) {
+        this.blocksPerRow = blocksPerRow;
         this.redraw = true;
     }
 
@@ -163,26 +192,48 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         this.redraw = true;
     }
 
+    public boolean getDrawGrid() {
+        return drawGrid;
+    }
+
+    public void setDrawGrid(boolean drawGrid) {
+        this.drawGrid = drawGrid;
+        this.redraw = true;
+    }
+    
+    public boolean getShowPriority() {
+        return showPriority;
+    }
+
+    public void setShowPriority(boolean showPriority) {
+        this.showPriority = showPriority;
+        this.redraw = true;
+    }
+    
+    public void mapBlocksChanged() {
+        this.redraw = true;
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        int x = e.getX() / (currentDisplaySize * 3*8);
-        int y = e.getY() / (currentDisplaySize * 3*8);
-        int blockIndex = y*(tilesPerRow/3) + x;
+        int x = e.getX() / (currentDisplaySize*3*8);
+        int y = e.getY() / (currentDisplaySize*3*8);
+        int blockIndex = y*blocksPerRow+x;
         if(e.getButton()==MouseEvent.BUTTON1){
             MapBlockLayout.selectedBlockIndex0 = blockIndex;
             if(leftSlotBlockPanel!=null){
-                leftSlotBlockPanel.setBlockImage(blocks[blockIndex].getImage());
+                leftSlotBlockPanel.setBlock(blocks[blockIndex]);
                 leftSlotBlockPanel.revalidate();
-                leftSlotBlockPanel.repaint();
+                leftSlotBlockPanel.repaint(); 
             }
         }else if(e.getButton()==MouseEvent.BUTTON3){
             MapBlockLayout.selectedBlockIndex1 = blockIndex;
             if(rightSlotBlockPanel!=null){
-                rightSlotBlockPanel.setBlockImage(blocks[blockIndex].getImage());
+                rightSlotBlockPanel.setBlock(blocks[blockIndex]);
                 rightSlotBlockPanel.revalidate();
                 rightSlotBlockPanel.repaint();
             }
@@ -225,6 +276,4 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     public void setRightSlotBlockPanel(BlockSlotPanel rightSlotBlockPanel) {
         this.rightSlotBlockPanel = rightSlotBlockPanel;
     }
-    
-    
 }
