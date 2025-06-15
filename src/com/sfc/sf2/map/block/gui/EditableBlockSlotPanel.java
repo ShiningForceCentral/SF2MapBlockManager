@@ -8,9 +8,11 @@ package com.sfc.sf2.map.block.gui;
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.map.block.layout.MapBlockLayout;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -27,8 +29,13 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
     private TileSlotPanel leftTileSlotPanel;
     private TileSlotPanel rightTileSlotPanel;
     
+    public static final int MODE_PAINT_TILE = 0;
+    public static final int MODE_TOGGLE_PRIORITY = 1;
+    public static final int MODE_TOGGLE_FLIP = 2;
+    private int currentMode = 0;
+    
     private boolean drawGrid;
-    private boolean showPriority;
+    private boolean showPriorityFlag;
     
     BufferedImage image;
     
@@ -42,7 +49,7 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
         super.paintComponent(g);
         if (image == null) {
             image = new BufferedImage(3*8, 3*8, BufferedImage.TYPE_INT_ARGB);
-            Graphics g2 = image.getGraphics();
+            Graphics2D g2 = (Graphics2D)image.getGraphics();
             if (block != null) {
                 if(block.getImage() == null) {
                     IndexColorModel icm = buildIndexColorModel(block.getTiles()[0].getPalette());
@@ -61,7 +68,7 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
                     blockGraphics.dispose();
                 }
                 g2.drawImage(block.getImage(), 0, 0, 3*8, 3*8, null);
-                if (showPriority) {
+                if (showPriorityFlag) {
                     Tile[] tiles = block.getTiles();
                     for (int t = 0; t < tiles.length; t++) {
                         if (tiles[t].isHighPriority()) {
@@ -108,6 +115,14 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
         this.mapBlockLayout = mapBlockLayout;
     }
     
+    public int getCurrentMode() {
+        return currentMode;
+    }
+
+    public void setCurrentMode(int currentMode) {
+        this.currentMode = currentMode;
+    }
+    
     public boolean getDrawGrid() {
         return drawGrid;
     }
@@ -120,11 +135,11 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
     }
     
     public boolean getShowPriority() {
-        return showPriority;
+        return showPriorityFlag;
     }
 
-    public void setShowPriority(boolean showPriority) {
-        this.showPriority = showPriority;
+    public void setShowPriority(boolean showPriorityFlag) {
+        this.showPriorityFlag = showPriorityFlag;
         image = null;
         this.validate();
         this.repaint();
@@ -168,26 +183,49 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
         
         int x = e.getX() / (getWidth() / 3);
         int y = e.getY() / (getHeight() / 3);
-        switch (e.getButton()) {
-            case MouseEvent.BUTTON1:
-                Tile leftSlotTile = leftTileSlotPanel.getTile();
-                if (leftSlotTile != null) {
-                    Tile[] tiles = block.getTiles();
-                    tiles[x + y*3] = cloneTile(leftSlotTile, tiles[x + y*3].isHighPriority());
-                    onBlockUpdated();
-                }   break;
-            case MouseEvent.BUTTON2:
-                block.getTiles()[x + y*3].setHighPriority(!block.getTiles()[x + y*3].isHighPriority());
-                onBlockUpdated();
+        switch (currentMode) {
+            case MODE_PAINT_TILE:
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    Tile leftSlotTile = leftTileSlotPanel.getTile();
+                    if (leftSlotTile != null) {
+                        Tile[] tiles = block.getTiles();
+                        tiles[x + y*3] = cloneTile(leftSlotTile, tiles[x + y*3].isHighPriority());
+                        onBlockUpdated();
+                    }
+                }
+                else if (e.getButton() == MouseEvent.BUTTON3) {
+                    Tile rightSlotTile = rightTileSlotPanel.getTile();
+                    if (rightSlotTile != null) {
+                        Tile[] tiles = block.getTiles();
+                        tiles[x + y*3] = cloneTile(rightSlotTile, tiles[x + y*3].isHighPriority());
+                        onBlockUpdated();
+                    }
+                }
                 break;
-            case MouseEvent.BUTTON3:
-                Tile rightSlotTile = rightTileSlotPanel.getTile();
-                if (rightSlotTile != null) {
-                    Tile[] tiles = block.getTiles();
-                    tiles[x + y*3] = cloneTile(rightSlotTile, tiles[x + y*3].isHighPriority());
+            case MODE_TOGGLE_FLIP:
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    block.getTiles()[x + y*3] = Tile.hFlip(block.getTiles()[x + y*3]);
                     onBlockUpdated();
-                }   break;
-            default:
+                }
+                else if (e.getButton() == MouseEvent.BUTTON2) {
+                    if (block.getTiles()[x + y*3].ishFlip()) {
+                        block.getTiles()[x + y*3] = Tile.hFlip(block.getTiles()[x + y*3]);
+                    }
+                    else if (block.getTiles()[x + y*3].ishFlip()) {
+                        block.getTiles()[x + y*3] = Tile.vFlip(block.getTiles()[x + y*3]);
+                    }
+                    onBlockUpdated();
+                }
+                else if (e.getButton() == MouseEvent.BUTTON3) {
+                    block.getTiles()[x + y*3] = Tile.vFlip(block.getTiles()[x + y*3]);
+                    onBlockUpdated();
+                }
+                break;
+            case MODE_TOGGLE_PRIORITY:
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    block.getTiles()[x + y*3].setHighPriority(!block.getTiles()[x + y*3].isHighPriority());
+                    onBlockUpdated();
+                }
                 break;
         }
     }
