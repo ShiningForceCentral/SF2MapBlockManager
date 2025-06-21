@@ -177,7 +177,7 @@
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="jPanel2" alignment="1" max="32767" attributes="0"/>
-                                          <Component id="jPanel9" alignment="1" pref="509" max="32767" attributes="0"/>
+                                          <Component id="jPanel9" alignment="1" pref="505" max="32767" attributes="0"/>
                                           <Group type="102" attributes="0">
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
@@ -1619,7 +1619,7 @@
                                       <Component id="jButton36" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="jPanel1" pref="341" max="32767" attributes="0"/>
+                                  <Component id="jPanel1" pref="345" max="32767" attributes="0"/>
                                   <Component id="jPanel12" alignment="0" max="32767" attributes="0"/>
                               </Group>
                             </DimensionLayout>

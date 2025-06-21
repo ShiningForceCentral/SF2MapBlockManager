@@ -1484,8 +1484,20 @@ public class MainEditor extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         mapblockManager.setBlocks(mapblockLayout.getBlocks());
-        Path path = Path.of(jTextField26.getText(), jTextField25.getText());
-        mapblockManager.exportDisassembly(path.toString());
+        
+        String toolDir = System.getProperty("user.dir");
+        Path toolPath = Paths.get(toolDir);
+        System.out.println(toolPath.toString());       
+        Path bPath = Paths.get(jTextField26.getText()).resolve(jTextField25.getText());
+        Path blocksetPath;
+        if(bPath.isAbsolute()){
+            blocksetPath = bPath;
+        }else{
+            blocksetPath = toolPath.resolve(bPath).normalize();
+        }
+        System.out.println(blocksetPath.toString());
+        
+        mapblockManager.exportDisassembly(blocksetPath.toString());
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTextField26ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField26ActionPerformed
@@ -1564,9 +1576,15 @@ public class MainEditor extends javax.swing.JFrame {
 
         String toolDir = System.getProperty("user.dir");
         Path toolPath = Paths.get(toolDir);
-
-        Path mapPath = toolPath.resolve(jTextField21.getText()).normalize();
         System.out.println(toolPath.toString());
+        Path mPath = Paths.get(jTextField21.getText());
+        Path mapPath;
+        if(mPath.isAbsolute()){
+            mapPath = mPath;
+        }else{
+            mapPath = toolPath.resolve(mPath).normalize();
+        }
+        System.out.println(mapPath.toString()); 
         Path basePath = toolPath.resolve(Paths.get(mapPath.toString(), "\\..\\..\\..\\..\\")).normalize();
         System.out.println(basePath.toString());
         Path pePath = Paths.get(jTextField22.getText());
