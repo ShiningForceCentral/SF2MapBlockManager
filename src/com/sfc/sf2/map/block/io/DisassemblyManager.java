@@ -98,7 +98,7 @@ public class DisassemblyManager {
                             System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tilesetData.length + " : " + tilesetPath);
                         }
                     }else{
-                        System.arraycopy(emptyTileset, 0, tileset, 0*128, emptyTileset.length);
+                        System.arraycopy(emptyTileset, 0, tileset, i*128, emptyTileset.length);
                     }
                 }
                 if(animtilesetpath!=null && animtilesetpath.toFile().exists()){
