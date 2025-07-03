@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 import javax.swing.JPanel;
 
@@ -73,31 +74,15 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
         }
         if(redraw){
             int blockHeight = blocks.length/blocksPerRow + ((blocks.length%blocksPerRow!=0)?1:0);
-            Color[] palette = blocks[0].getTiles()[0].getPalette();
-            //palette[0] = new Color(255, 255, 255, 0);
-            IndexColorModel icm = buildIndexColorModel(palette);
+            IndexColorModel icm = blocks[0].getIcm();
             currentImage = new BufferedImage(blocksPerRow*3*8+1, blockHeight*3*8+1, BufferedImage.TYPE_INT_ARGB);
             Graphics2D graphics = (Graphics2D)currentImage.getGraphics(); 
             for(int i=0;i<blocks.length;i++){
                 int baseX = (i%blocksPerRow)*3*8;
                 int baseY = (i/blocksPerRow)*3*8;
                 MapBlock block = blocks[i];
-                BufferedImage blockImage = block.getImage();
-                if(blockImage==null){
-                    blockImage = new BufferedImage(3*8, 3*8 , BufferedImage.TYPE_BYTE_INDEXED, icm);
-                    Graphics blockGraphics = blockImage.getGraphics();                    
-                    blockGraphics.drawImage(block.getTiles()[0].getImage(), 0*8, 0*8, null);
-                    blockGraphics.drawImage(block.getTiles()[1].getImage(), 1*8, 0*8, null);
-                    blockGraphics.drawImage(block.getTiles()[2].getImage(), 2*8, 0*8, null);
-                    blockGraphics.drawImage(block.getTiles()[3].getImage(), 0*8, 1*8, null);
-                    blockGraphics.drawImage(block.getTiles()[4].getImage(), 1*8, 1*8, null);
-                    blockGraphics.drawImage(block.getTiles()[5].getImage(), 2*8, 1*8, null);
-                    blockGraphics.drawImage(block.getTiles()[6].getImage(), 0*8, 2*8, null);
-                    blockGraphics.drawImage(block.getTiles()[7].getImage(), 1*8, 2*8, null);
-                    blockGraphics.drawImage(block.getTiles()[8].getImage(), 2*8, 2*8, null);
-                    block.setImage(blockImage);
-                    blockGraphics.dispose();
-                }
+                block.updatePixels();
+                BufferedImage blockImage = block.getIndexedColorImage();
                 graphics.drawImage(blockImage, baseX, baseY, null);
                 
                 if (showPriority) {
@@ -131,25 +116,6 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
             }
         }          
         return currentImage;
-    }
-    
-    private IndexColorModel buildIndexColorModel(Color[] colors){
-        byte[] reds = new byte[16];
-        byte[] greens = new byte[16];
-        byte[] blues = new byte[16];
-        byte[] alphas = new byte[16];
-        //reds[0] = (byte)0xFF;
-        //greens[0] = (byte)0xFF;
-        //blues[0] = (byte)0xFF;
-        for(int i=0;i<16;i++){
-            reds[i] = (byte)colors[i].getRed();
-            greens[i] = (byte)colors[i].getGreen();
-            blues[i] = (byte)colors[i].getBlue();
-            alphas[i] = (byte)0xFF;
-        }
-        alphas[0] = 0;
-        IndexColorModel icm = new IndexColorModel(4,16,reds,greens,blues,0);
-        return icm;
     }
     
     private BufferedImage resize(BufferedImage image){

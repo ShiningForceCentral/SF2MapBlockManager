@@ -75,7 +75,7 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
                 int baseX = (i % tilesPerRow)*8;
                 int baseY = (i / tilesPerRow)*8;
                 Tile tile = tiles[i];
-                BufferedImage tileImage = tile.getImage();
+                BufferedImage tileImage = tile.getIndexedColorImage();
                 if(tileImage != null) {
                     graphics.drawImage(tileImage, baseX, baseY, null);
                 }

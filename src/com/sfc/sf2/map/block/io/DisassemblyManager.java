@@ -156,7 +156,7 @@ public class DisassemblyManager {
             if(paletteFilenames.isEmpty()){
                 System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassemblyFromEntryFiles() - ERROR : no palette file imported. Wrong path or filename prefix ?");
             } else if(paletteIndex > paletteFilenames.size()){
-                System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassemblyFromEntryFiles() - ERROR : Index "+paletteIndex+" id superior to unmber of palette files found : "+paletteFilenames.size());
+                System.err.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassemblyFromEntryFiles() - ERROR : Index "+paletteIndex+" id superior to number of palette files found : "+paletteFilenames.size());
             } else {
                 palettePath = incbinPath + System.getProperty("file.separator") + paletteFilenames.get(paletteIndex);
                 System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - Selected palette file : "+palettePath);
@@ -532,6 +532,8 @@ public class DisassemblyManager {
             MapBlock block = new MapBlock();
             block.setIndex(i);
             block.setTiles(Arrays.copyOfRange(outputTiles,i*9, i*9+9));
+            block.setPalette(block.getTiles()[0].getPalette());
+            block.setIcm(block.getTiles()[0].getIcm());
             blocks[i] = block;
         }
         return blocks;

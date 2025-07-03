@@ -22,7 +22,7 @@ public class TileSlotPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (tile != null) {
-            g.drawImage(tile.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);
+            g.drawImage(tile.getIndexedColorImage(), 0, 0, this.getWidth(), this.getHeight(), null);
         }
     }
     
