@@ -1805,6 +1805,7 @@ public class MainEditor extends javax.swing.JFrame {
         MapBlock newBlock = new MapBlock();
         newBlock.setIndex(block.getIndex());
         newBlock.setFlags(block.getFlags());
+        newBlock.setIcm(block.getIcm());
         Tile[] tiles = block.getTiles();
         if (tiles != null) {
             Tile[] newTiles = new Tile[tiles.length];

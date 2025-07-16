@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 
 /**
@@ -54,18 +55,16 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
                 if(block.getImage() == null) {
                     IndexColorModel icm = buildIndexColorModel(block.getTiles()[0].getPalette());
                     BufferedImage blockImage = new BufferedImage(3*8, 3*8 , BufferedImage.TYPE_BYTE_INDEXED, icm);
-                    Graphics blockGraphics = blockImage.getGraphics();                    
-                    blockGraphics.drawImage(block.getTiles()[0].getImage(), 0*8, 0*8, null);
-                    blockGraphics.drawImage(block.getTiles()[1].getImage(), 1*8, 0*8, null);
-                    blockGraphics.drawImage(block.getTiles()[2].getImage(), 2*8, 0*8, null);
-                    blockGraphics.drawImage(block.getTiles()[3].getImage(), 0*8, 1*8, null);
-                    blockGraphics.drawImage(block.getTiles()[4].getImage(), 1*8, 1*8, null);
-                    blockGraphics.drawImage(block.getTiles()[5].getImage(), 2*8, 1*8, null);
-                    blockGraphics.drawImage(block.getTiles()[6].getImage(), 0*8, 2*8, null);
-                    blockGraphics.drawImage(block.getTiles()[7].getImage(), 1*8, 2*8, null);
-                    blockGraphics.drawImage(block.getTiles()[8].getImage(), 2*8, 2*8, null);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[0].getPixels(), 0*8, 0*8);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[1].getPixels(), 1*8, 0*8);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[2].getPixels(), 2*8, 0*8);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[3].getPixels(), 0*8, 1*8);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[4].getPixels(), 1*8, 1*8);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[5].getPixels(), 2*8, 1*8);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[6].getPixels(), 0*8, 2*8);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[7].getPixels(), 1*8, 2*8);
+                    drawIndexedColorPixels(blockImage, block.getTiles()[8].getPixels(), 2*8, 2*8);
                     block.setImage(blockImage);
-                    blockGraphics.dispose();
                 }
                 g2.drawImage(block.getImage(), 0, 0, 3*8, 3*8, null);
                 if (showPriorityFlag) {
@@ -89,6 +88,16 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
             }
             g2.dispose();
             g.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), null);
+        }
+    }
+    
+    public void drawIndexedColorPixels(BufferedImage image, int[][] pixels, int x, int y){
+        byte[] data = ((DataBufferByte)(image.getRaster().getDataBuffer())).getData();
+        int width = image.getWidth();
+        for(int i=0;i<pixels.length;i++){
+            for(int j=0;j<pixels[i].length;j++){
+                data[(y+j)*width+x+i] = (byte)(pixels[i][j]);
+            }
         }
     }
     
@@ -243,6 +252,7 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
     
     private void onBlockUpdated() {
         block.setImage(null);
+        block.setIndexedColorImage(null);
         mapBlockLayout.mapBlocksChanged();
         mapBlockLayout.revalidate();
         mapBlockLayout.repaint();
