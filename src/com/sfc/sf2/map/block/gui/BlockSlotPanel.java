@@ -22,7 +22,7 @@ public class BlockSlotPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (block != null) {
-            g.drawImage(block.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);
+            g.drawImage(block.getIndexedColorImage(), 0, 0, this.getWidth(), this.getHeight(), null);
         }
     }
     
