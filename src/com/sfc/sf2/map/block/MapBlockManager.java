@@ -8,7 +8,8 @@ package com.sfc.sf2.map.block;
 import com.sfc.sf2.graphics.GraphicsManager;
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.io.DisassemblyManager;
-import com.sfc.sf2.map.block.io.PngManager;
+import com.sfc.sf2.map.block.io.MetaManager;
+import com.sfc.sf2.map.block.io.RawImageManager;
 import com.sfc.sf2.palette.PaletteManager;
 
 /**
@@ -70,12 +71,34 @@ public class MapBlockManager {
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportOriginalRom() - Exporting original ROM ...");
         graphicsManager.exportRom(originalRomFilePath, graphicsOffset, GraphicsManager.COMPRESSION_BASIC);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportOriginalRom() - Original ROM exported.");        
-    }      
+    }
     
-    public void exportPng(String filepath, int blocksPerRow){
+    public void importPng(String filepath, String hpFilePath){
+        System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportGif() - Exporting GIF ...");
+        blocks = RawImageManager.importImage(filepath);
+        MetaManager.importBlockHpTilesFile(hpFilePath, blocks, RawImageManager.getImportedImageBlockWidth());
+        System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportGif() - GIF exported.");       
+    }
+    
+    public void importGif(String filepath, String hpFilePath){
+        System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportGif() - Exporting GIF ...");
+        blocks = RawImageManager.importImage(filepath);
+        MetaManager.importBlockHpTilesFile(hpFilePath, blocks, RawImageManager.getImportedImageBlockWidth());
+        System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportGif() - GIF exported.");       
+    }
+    
+    public void exportPng(String filepath, String hpFilePath, int blocksPerRow){
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportPng() - Exporting PNG ...");
-        PngManager.exportPng(blocks, filepath, blocksPerRow);
+        RawImageManager.exportRawImage(blocks, filepath, blocksPerRow, com.sfc.sf2.graphics.io.RawImageManager.FILE_FORMAT_PNG);
+        MetaManager.exportBlockHpTilesFile(blocks, blocksPerRow, hpFilePath);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportPng() - PNG exported.");       
+    }
+    
+    public void exportGif(String filepath, String hpFilePath, int blocksPerRow){
+        System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportGif() - Exporting GIF ...");
+        RawImageManager.exportRawImage(blocks, filepath, blocksPerRow, com.sfc.sf2.graphics.io.RawImageManager.FILE_FORMAT_GIF);
+        MetaManager.exportBlockHpTilesFile(blocks, blocksPerRow, hpFilePath);
+        System.out.println("com.sfc.sf2.mapblock.MapBlockManager.exportGif() - GIF exported.");       
     }
 
     public MapBlock[] getBlocks() {
