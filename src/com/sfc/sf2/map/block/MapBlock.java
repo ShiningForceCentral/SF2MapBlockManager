@@ -6,7 +6,7 @@
 package com.sfc.sf2.map.block;
 
 import com.sfc.sf2.graphics.Tile;
-import java.awt.Color;
+import com.sfc.sf2.palette.Palette;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
@@ -16,6 +16,9 @@ import java.awt.image.IndexColorModel;
  * @author wiz
  */
 public class MapBlock {
+    
+    public static final int MAP_FLAG_MASK_EVENTS = 0x3C00;
+    public static final int MAP_FLAG_MASK_NAV = 0xC000;
     
     public static final int TILE_WIDTH = 3;
     public static final int TILE_HEIGHT = 3;
@@ -31,7 +34,7 @@ public class MapBlock {
     private BufferedImage image;
     private BufferedImage explorationFlagImage;
     private BufferedImage interactionFlagImage;
-    private Color[] palette;
+    private Palette palette;
     private IndexColorModel icm;
     private int[][] pixels = new int[PIXEL_HEIGHT][PIXEL_WIDTH];
     private BufferedImage indexedColorImage = null;
@@ -60,9 +63,8 @@ public class MapBlock {
         this.tiles = tiles;
     }
 
-    public void setPalette(Color[] palette) {
+    public void setPalette(Palette palette) {
         this.palette = palette;
-        //generateIcm();
     }
 
     public IndexColorModel getIcm() {
@@ -81,19 +83,8 @@ public class MapBlock {
         this.pixels = pixels;
     }
 
-    public void generateIcm(){
-        byte[] reds = new byte[16];
-        byte[] greens = new byte[16];
-        byte[] blues = new byte[16];
-        byte[] alphas = new byte[16];
-        for(int i=0;i<16;i++){
-            reds[i] = (byte)this.palette[i].getRed();
-            greens[i] = (byte)this.palette[i].getGreen();
-            blues[i] = (byte)this.palette[i].getBlue();
-            alphas[i] = (byte)0xFF;
-        }
-        alphas[0] = 0;
-        icm = new IndexColorModel(4,16,reds,greens,blues,alphas);       
+    public void buildIcm(){
+        icm = palette.buildICM();
     }
 
     public BufferedImage getImage() {
@@ -206,9 +197,4 @@ public class MapBlock {
     public void setInteractionFlagImage(BufferedImage interactionFlagImage) {
         this.interactionFlagImage = interactionFlagImage;
     }
-
-    
-    
-    
-    
 }

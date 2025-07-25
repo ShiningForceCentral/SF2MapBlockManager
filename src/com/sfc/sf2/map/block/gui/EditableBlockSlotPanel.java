@@ -52,21 +52,7 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
             image = new BufferedImage(3*8, 3*8, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = (Graphics2D)image.getGraphics();
             if (block != null) {
-                if(block.getImage() == null) {
-                    IndexColorModel icm = buildIndexColorModel(block.getTiles()[0].getPalette());
-                    BufferedImage blockImage = new BufferedImage(3*8, 3*8 , BufferedImage.TYPE_BYTE_INDEXED, icm);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[0].getPixels(), 0*8, 0*8);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[1].getPixels(), 1*8, 0*8);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[2].getPixels(), 2*8, 0*8);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[3].getPixels(), 0*8, 1*8);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[4].getPixels(), 1*8, 1*8);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[5].getPixels(), 2*8, 1*8);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[6].getPixels(), 0*8, 2*8);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[7].getPixels(), 1*8, 2*8);
-                    drawIndexedColorPixels(blockImage, block.getTiles()[8].getPixels(), 2*8, 2*8);
-                    block.setImage(blockImage);
-                }
-                g2.drawImage(block.getImage(), 0, 0, 3*8, 3*8, null);
+                g2.drawImage(block.getIndexedColorImage(), 0, 0, 3*8, 3*8, null);
                 if (showPriorityFlag) {
                     Tile[] tiles = block.getTiles();
                     for (int t = 0; t < tiles.length; t++) {
@@ -99,25 +85,6 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
                 data[(y+j)*width+x+i] = (byte)(pixels[i][j]);
             }
         }
-    }
-    
-    private IndexColorModel buildIndexColorModel(Color[] colors){
-        byte[] reds = new byte[16];
-        byte[] greens = new byte[16];
-        byte[] blues = new byte[16];
-        byte[] alphas = new byte[16];
-        //reds[0] = (byte)0xFF;
-        //greens[0] = (byte)0xFF;
-        //blues[0] = (byte)0xFF;
-        for(int i=0;i<16;i++){
-            reds[i] = (byte)colors[i].getRed();
-            greens[i] = (byte)colors[i].getGreen();
-            blues[i] = (byte)colors[i].getBlue();
-            alphas[i] = (byte)0xFF;
-        }
-        alphas[0] = 0;
-        IndexColorModel icm = new IndexColorModel(4,16,reds,greens,blues,0);
-        return icm;
     }
     
     public void setMapBlockLayout(MapBlockLayout mapBlockLayout) {

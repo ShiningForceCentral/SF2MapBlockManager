@@ -9,8 +9,8 @@ import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.graphics.compressed.StackGraphicsDecoder;
 import com.sfc.sf2.map.block.Tileset;
+import com.sfc.sf2.palette.Palette;
 import com.sfc.sf2.palette.graphics.PaletteDecoder;
-import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class DisassemblyManager {
     private Tile[] outputTiles = null;
     private StringBuilder debugSb = null;
     
-    private Color[] palette = null;
+    private Palette palette = null;
     private Tile[] tileset = new Tile[128*5];
     private Tileset[] tilesets = new Tileset[5];
     
@@ -62,67 +62,65 @@ public class DisassemblyManager {
         inputWord = 0;
 
         try{
-            Path palettepath = Paths.get(palettePath);
+            palette = com.sfc.sf2.palette.io.DisassemblyManager.importDisassembly(palettePath);
+            if (palette == null) {
+                throw new IOException("ERROR - Could not load palette : " + palettePath);
+            }
+            
             Path animtilesetpath = null;
             if(animTilesetPath!=null){
                 animtilesetpath = Paths.get(animTilesetPath);
             }
             Path blockspath = Paths.get(blocksPath);
-            if(palettepath.toFile().exists()){
-                byte[] paletteData = Files.readAllBytes(palettepath);
-                palette = PaletteDecoder.parsePalette(paletteData);
-                //palette[0] = new Color(255, 255, 255, 0);
-                Tile emptyTile = new Tile();
-                emptyTile.setPalette(palette);
-                emptyTile.setPixels(new int[8][8]);
-                Tile[] emptyTileset = new Tile[128];
-                for(int i=0;i<emptyTileset.length;i++){
-                    emptyTileset[i] = emptyTile;
+            Tile emptyTile = new Tile();
+            emptyTile.setPalette(palette);
+            emptyTile.setPixels(new int[8][8]);
+            Tile[] emptyTileset = new Tile[128];
+            for(int i=0;i<emptyTileset.length;i++){
+                emptyTileset[i] = emptyTile;
+            }
+            for (int i = 0; i < tilesetPaths.length; i++) {
+                if (i >= 5) {
+                    System.out.println("Too many tilesets defined. Ignoring excess. Count = " + tilesetPaths.length);
+                    break;
                 }
-                for (int i = 0; i < tilesetPaths.length; i++) {
-                    if (i >= 5) {
-                        System.out.println("Too many tilesets defined. Ignoring excess. Count = " + tilesetPaths.length);
-                        break;
-                    }
-                    Path tilesetPath = Paths.get(tilesetPaths[i]);
-                    if(tilesetPath.toFile().exists()){
-                        byte[] tilesetData = Files.readAllBytes(tilesetPath);
-                        if(tilesetData.length>2){
-                            Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tilesetData, palette);
-                            System.arraycopy(tileset, 0, this.tileset, i*128, tileset.length);
-                            Tileset set = new Tileset();
-                            set.setName(tilesetPath.getFileName().toString());
-                            set.setTiles(tileset);
-                            tilesets[i] = set;
-                        }else{
-                            System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tilesetData.length + " : " + tilesetPath);
-                        }
+                Path tilesetPath = Paths.get(tilesetPaths[i]);
+                if(tilesetPath.toFile().exists()){
+                    byte[] tilesetData = Files.readAllBytes(tilesetPath);
+                    if(tilesetData.length>2){
+                        Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tilesetData, palette);
+                        System.arraycopy(tileset, 0, this.tileset, i*128, tileset.length);
+                        Tileset set = new Tileset();
+                        set.setName(tilesetPath.getFileName().toString());
+                        set.setTiles(tileset);
+                        tilesets[i] = set;
                     }else{
-                        System.arraycopy(emptyTileset, 0, tileset, i*128, emptyTileset.length);
+                        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tilesetData.length + " : " + tilesetPath);
                     }
-                }
-                if(animtilesetpath!=null && animtilesetpath.toFile().exists()){
-                    byte[] animTilesetData = Files.readAllBytes(animtilesetpath);
-                    if(animTilesetData.length>2){
-                        Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(animTilesetData, palette);
-                        int dest = animTilesetDest-256;
-                        System.arraycopy(tileset, animTilesetStart, this.tileset, dest, animTilesetLength);
-                    }else{
-                        System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + animTilesetData.length + " : " + animTilesetPath);
-                    }
-                }
-                for(int i=0;i<tileset.length;i++){
-                    if(tileset[i]!=null){
-                        tileset[i].setId(i);
-                    }
-                }
-                if(blockspath.toFile().exists()){
-                     inputData = Files.readAllBytes(blockspath);
                 }else{
-                    System.err.println("ERROR - File not found : "+blocksPath);
+                    System.arraycopy(emptyTileset, 0, tileset, i*128, emptyTileset.length);
                 }
-                
-            }            
+            }
+            if(animtilesetpath!=null && animtilesetpath.toFile().exists()){
+                byte[] animTilesetData = Files.readAllBytes(animtilesetpath);
+                if(animTilesetData.length>2){
+                    Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(animTilesetData, palette);
+                    int dest = animTilesetDest-256;
+                    System.arraycopy(tileset, animTilesetStart, this.tileset, dest, animTilesetLength);
+                }else{
+                    System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + animTilesetData.length + " : " + animTilesetPath);
+                }
+            }
+            for(int i=0;i<tileset.length;i++){
+                if(tileset[i]!=null){
+                    tileset[i].setId(i);
+                }
+            }
+            if(blockspath.toFile().exists()){
+                 inputData = Files.readAllBytes(blockspath);
+            }else{
+                System.err.println("ERROR - File not found : "+blocksPath);
+            }       
 
             if(tileset!=null && inputData!=null){
                 if(tileset.length==MAPBLOCK_TILES_LENGTH){

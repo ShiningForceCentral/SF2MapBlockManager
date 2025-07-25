@@ -10,7 +10,6 @@ import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.io.DisassemblyManager;
 import com.sfc.sf2.map.block.io.PngManager;
 import com.sfc.sf2.palette.PaletteManager;
-import java.awt.Color;
 
 /**
  *
@@ -27,6 +26,7 @@ public class MapBlockManager {
        
     public void importDisassembly(String incbinPath, String paletteEntriesPath, String tilesetEntriesPath, String tilesetsFilePath, String blocksPath) {
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Importing disassembly ...");
+        paletteManager.importDisassembly(blocksPath);
         blocks = disassemblyManager.importDisassembly(incbinPath, paletteEntriesPath, tilesetEntriesPath, tilesetsFilePath, blocksPath);
         tiles = disassemblyManager.getTileset();
         tilesets = disassemblyManager.getTilesets();
