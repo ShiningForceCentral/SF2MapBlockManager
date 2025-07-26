@@ -17,7 +17,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import javax.swing.JPanel;
 
 /**
@@ -57,9 +56,14 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     }
     
     public BufferedImage buildImage(){
-        if(redraw && blocks != null){
-            currentImage = buildImage(this.blocks, this.blocksPerRow);
-            setSize(currentImage.getWidth(), currentImage.getHeight());
+        if (redraw) {
+            if (blocks == null) {
+                currentImage = null;
+            } else {
+                currentImage = buildImage(this.blocks, this.blocksPerRow);
+                setSize(currentImage.getWidth(), currentImage.getHeight());
+            }
+            redraw = false;
         }
         return currentImage;
     }
@@ -106,7 +110,6 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
             }
             graphics.dispose();
             currentImage = resize(currentImage);
-            redraw = false;
         }          
         return currentImage;
     }
