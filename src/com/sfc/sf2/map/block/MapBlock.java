@@ -113,7 +113,8 @@ public class MapBlock {
     }
 
     public BufferedImage getIndexedColorImage(){
-        if(indexedColorImage==null){
+        if(indexedColorImage==null && palette != null) {
+            if (icm == null) buildIcm();
             indexedColorImage = new BufferedImage(PIXEL_WIDTH, PIXEL_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, icm);
             byte[] data = ((DataBufferByte)(indexedColorImage.getRaster().getDataBuffer())).getData();
             int width = indexedColorImage.getWidth();
