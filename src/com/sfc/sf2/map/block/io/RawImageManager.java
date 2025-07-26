@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 public class RawImageManager {
     
     private static int importedImageBlockWidth = 64;
+    private static Tile[] importedTiles;
     
     private static final Logger LOG = Logger.getLogger(com.sfc.sf2.graphics.io.RawImageManager.class.getName());
     
@@ -25,6 +26,7 @@ public class RawImageManager {
         MapBlock[] blocks = null;
         try{
             Tile[] tiles = com.sfc.sf2.graphics.io.RawImageManager.importImage(filepath);
+            importedTiles = tiles;
             if(tiles == null || tiles.length == 0){
                 throw new IOException("Image not found or image corrupted :" + filepath);
             }
@@ -79,5 +81,9 @@ public class RawImageManager {
     
     public static int getImportedImageBlockWidth() {
         return importedImageBlockWidth;
+    }
+    
+    public static Tile[] getImportedTiles() {
+        return importedTiles;
     }
 }
