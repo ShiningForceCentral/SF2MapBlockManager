@@ -10,7 +10,6 @@ import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.graphics.compressed.StackGraphicsDecoder;
 import com.sfc.sf2.map.block.Tileset;
 import com.sfc.sf2.palette.Palette;
-import com.sfc.sf2.palette.graphics.PaletteDecoder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

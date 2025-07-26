@@ -57,20 +57,17 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
     }
     
     public BufferedImage buildImage(){
-        if(redraw){
-            currentImage = buildImage(this.blocks, this.blocksPerRow, false);
+        if(redraw && blocks != null){
+            currentImage = buildImage(this.blocks, this.blocksPerRow);
             setSize(currentImage.getWidth(), currentImage.getHeight());
         }
         return currentImage;
     }
     
-    public BufferedImage buildImage(MapBlock[] blocks, int blocksPerRow, boolean pngExport){ 
+    public BufferedImage buildImage(MapBlock[] blocks, int blocksPerRow){ 
         renderCounter++;
         System.out.println("Blockset render "+renderCounter);      
         this.blocks = blocks;
-        if(pngExport){
-            redraw = true;
-        }
         if(redraw){
             int blockHeight = blocks.length/blocksPerRow + ((blocks.length%blocksPerRow!=0)?1:0);
             currentImage = new BufferedImage(blocksPerRow*3*8+1, blockHeight*3*8+1, BufferedImage.TYPE_INT_ARGB);
@@ -108,10 +105,8 @@ public class MapBlockLayout extends JPanel implements MouseListener, MouseMotion
                 }
             }
             graphics.dispose();
-            if(!pngExport){
-                currentImage = resize(currentImage);
-                redraw = false;
-            }
+            currentImage = resize(currentImage);
+            redraw = false;
         }          
         return currentImage;
     }
