@@ -8,7 +8,6 @@ package com.sfc.sf2.map.block.gui;
 import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import com.sfc.sf2.map.block.layout.MapBlockLayout;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -18,7 +17,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
 
 /**
  *
@@ -221,7 +219,7 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
     }
     
     private void onBlockUpdated() {
-        block.setIndexedColorImage(null);
+        block.clearIndexedColorImage();
         mapBlockLayout.mapBlocksChanged();
         mapBlockLayout.revalidate();
         mapBlockLayout.repaint();

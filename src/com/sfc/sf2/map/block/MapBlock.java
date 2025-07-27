@@ -34,7 +34,7 @@ public class MapBlock {
     private BufferedImage indexedColorImage = null;
     private BufferedImage explorationFlagImage;
     private BufferedImage interactionFlagImage;
-    private int[][] pixels = new int[PIXEL_HEIGHT][PIXEL_WIDTH];
+    private int[][] cachedPixels;
     
     public int getIndex() {
         return index;
@@ -86,11 +86,11 @@ public class MapBlock {
     }
 
     public int[][] getPixels() {
-        return pixels;
-    }
-
-    public void setPixels(int[][] pixels) {
-        this.pixels = pixels;
+        if (cachedPixels != null) {
+            return cachedPixels;
+        }
+        updatePixels();
+        return cachedPixels;
     }
     
     public void updatePixels(){
@@ -101,30 +101,28 @@ public class MapBlock {
         }
     }
     
-    public void updateIndexedColorPixels(int[][] pixels, int x, int y){
+    private void updateIndexedColorPixels(int[][] pixels, int x, int y){
+        if (cachedPixels == null) {
+            cachedPixels = new int[PIXEL_WIDTH][PIXEL_HEIGHT];
+        }
         for(int i=0;i<pixels.length;i++){
             for(int j=0;j<pixels[i].length;j++){
-                this.pixels[y+j][x+i] = pixels[i][j];
+                this.cachedPixels[x+i][y+j] = pixels[i][j];
             }
         }
+    }
+    
+    public void clearIndexedColorImage() {
+        indexedColorImage = null;
+        cachedPixels = null;
     }
 
     public BufferedImage getIndexedColorImage(){
         if(indexedColorImage==null && getPalette() != null) {
             indexedColorImage = new BufferedImage(PIXEL_WIDTH, PIXEL_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, getPalette().getIcm());
-            byte[] data = ((DataBufferByte)(indexedColorImage.getRaster().getDataBuffer())).getData();
-            int width = indexedColorImage.getWidth();
-            for(int i=0;i<pixels.length;i++){
-                for(int j=0;j<pixels[i].length;j++){
-                    data[i*width+j] = (byte)(pixels[i][j]);
-                }
-            }
+            drawIndexedColorPixels(indexedColorImage, getPixels(), 0, 0);
         }
         return indexedColorImage;        
-    }  
-
-    public void setIndexedColorImage(BufferedImage indexedColorImage) {
-        this.indexedColorImage = indexedColorImage;
     }
     
     public void drawIndexedColorPixels(BufferedImage image, int[][] pixels, int x, int y){
@@ -136,17 +134,21 @@ public class MapBlock {
             }
         }
     }
-    
-    public boolean equalsIgnoreTiles(Object other){
-        if (other == null) return false;
-        if (other == this) return true;
-        if (!(other instanceof MapBlock))return false;
-        MapBlock block = (MapBlock)other;
-        if(this.index == block.getIndex() && this.flags == block.getFlags()){
-            return true;
-        }else{
-            return false;
-        }
+
+    public BufferedImage getExplorationFlagImage() {
+        return explorationFlagImage;
+    }
+
+    public void setExplorationFlagImage(BufferedImage explorationFlagImage) {
+        this.explorationFlagImage = explorationFlagImage;
+    }
+
+    public BufferedImage getInteractionFlagImage() {
+        return interactionFlagImage;
+    }
+
+    public void setInteractionFlagImage(BufferedImage interactionFlagImage) {
+        this.interactionFlagImage = interactionFlagImage;
     }
     
     @Override
@@ -166,6 +168,18 @@ public class MapBlock {
         return true;
     }
     
+    public boolean equalsIgnoreTiles(Object other){
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof MapBlock))return false;
+        MapBlock block = (MapBlock)other;
+        if(this.index == block.getIndex() && this.flags == block.getFlags()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
     @Override 
     public MapBlock clone(){
         MapBlock clone = new MapBlock();
@@ -175,21 +189,5 @@ public class MapBlock {
         clone.setExplorationFlagImage(this.explorationFlagImage);
         clone.setInteractionFlagImage(this.interactionFlagImage);
         return clone;
-    }
-
-    public BufferedImage getExplorationFlagImage() {
-        return explorationFlagImage;
-    }
-
-    public void setExplorationFlagImage(BufferedImage explorationFlagImage) {
-        this.explorationFlagImage = explorationFlagImage;
-    }
-
-    public BufferedImage getInteractionFlagImage() {
-        return interactionFlagImage;
-    }
-
-    public void setInteractionFlagImage(BufferedImage interactionFlagImage) {
-        this.interactionFlagImage = interactionFlagImage;
     }
 }
