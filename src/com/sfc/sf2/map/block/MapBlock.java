@@ -89,6 +89,7 @@ public class MapBlock {
         if (cachedPixels != null) {
             return cachedPixels;
         }
+        cachedPixels = new int[PIXEL_WIDTH][PIXEL_HEIGHT];
         updatePixels();
         return cachedPixels;
     }

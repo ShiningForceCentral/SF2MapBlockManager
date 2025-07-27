@@ -8,6 +8,7 @@ package com.sfc.sf2.map.block.gui;
 import com.sfc.sf2.map.block.MapBlock;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 /**
@@ -17,11 +18,14 @@ import javax.swing.JPanel;
 public class BlockSlotPanel extends JPanel {
     
     MapBlock block;
+    BufferedImage overrideImage;
     
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (block != null) {
+        if (overrideImage != null) {
+            g.drawImage(overrideImage, 0, 0, this.getWidth(), this.getHeight(), null);
+        } else if (block != null) {
             g.drawImage(block.getIndexedColorImage(), 0, 0, this.getWidth(), this.getHeight(), null);
         }
     }
@@ -37,6 +41,18 @@ public class BlockSlotPanel extends JPanel {
 
     public void setBlock(MapBlock block) {
         this.block = block;
+        overrideImage = null;
+        this.validate();
+        this.repaint();
+    }
+    
+    public BufferedImage getOverrideImage() {
+        return overrideImage;
+    }
+
+    public void setOverrideImage(BufferedImage overrideImage) {
+        this.overrideImage = overrideImage;
+        block = null;
         this.validate();
         this.repaint();
     }
