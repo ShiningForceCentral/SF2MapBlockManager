@@ -171,6 +171,7 @@ public class MapBlock {
         clone.setIndex(this.index);
         clone.setFlags(this.flags);
         clone.setTiles(this.tiles.clone());
+        clone.setPalette(this.palette);
         clone.setIcm(this.icm);
         clone.setExplorationFlagImage(this.explorationFlagImage);
         clone.setInteractionFlagImage(this.interactionFlagImage);
