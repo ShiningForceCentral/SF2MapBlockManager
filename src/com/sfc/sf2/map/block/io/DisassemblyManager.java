@@ -30,9 +30,7 @@ import java.util.logging.Logger;
  * @author wiz
  */
 public class DisassemblyManager {
-
-    private static final int MAPBLOCK_TILES_LENGTH = 128*5;
-    
+        
     private byte[] inputData;
     private short inputWord = 0;
     private int inputCursor = -2;
@@ -42,7 +40,6 @@ public class DisassemblyManager {
     private StringBuilder debugSb = null;
     
     private Palette palette = null;
-    private Tile[] tileset = new Tile[128*5];
     private Tileset[] tilesets = new Tileset[5];
     
     private Short[] rightTileHistory = new Short[0x800];
@@ -71,13 +68,6 @@ public class DisassemblyManager {
                 animtilesetpath = Paths.get(animTilesetPath);
             }
             Path blockspath = Paths.get(blocksPath);
-            Tile emptyTile = new Tile();
-            emptyTile.setPalette(palette);
-            emptyTile.setPixels(new int[8][8]);
-            Tile[] emptyTileset = new Tile[128];
-            for(int i=0;i<emptyTileset.length;i++){
-                emptyTileset[i] = emptyTile;
-            }
             for (int i = 0; i < tilesetPaths.length; i++) {
                 if (i >= 5) {
                     System.out.println("Too many tilesets defined. Ignoring excess. Count = " + tilesetPaths.length);
@@ -88,7 +78,6 @@ public class DisassemblyManager {
                     byte[] tilesetData = Files.readAllBytes(tilesetPath);
                     if(tilesetData.length>2){
                         Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(tilesetData, palette);
-                        System.arraycopy(tileset, 0, this.tileset, i*128, tileset.length);
                         Tileset set = new Tileset();
                         set.setName(tilesetPath.getFileName().toString());
                         set.setTiles(tileset);
@@ -96,23 +85,26 @@ public class DisassemblyManager {
                     }else{
                         System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + tilesetData.length + " : " + tilesetPath);
                     }
-                }else{
-                    System.arraycopy(emptyTileset, 0, tileset, i*128, emptyTileset.length);
                 }
             }
             if(animtilesetpath!=null && animtilesetpath.toFile().exists()){
                 byte[] animTilesetData = Files.readAllBytes(animtilesetpath);
                 if(animTilesetData.length>2){
                     Tile[] tileset = new StackGraphicsDecoder().decodeStackGraphics(animTilesetData, palette);
-                    int dest = animTilesetDest-256;
-                    System.arraycopy(tileset, animTilesetStart, this.tileset, dest, animTilesetLength);
+                    int dest = animTilesetDest-(Tileset.TILESET_TILES*2);
+                    int tilsetIndex = dest/Tileset.TILESET_TILES;
+                    dest = dest%Tileset.TILESET_TILES;
+                    System.arraycopy(tileset, animTilesetStart, tilesets[tilsetIndex], dest, animTilesetLength);
                 }else{
                     System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.parseGraphics() - File ignored because of wrong length " + animTilesetData.length + " : " + animTilesetPath);
                 }
             }
-            for(int i=0;i<tileset.length;i++){
-                if(tileset[i]!=null){
-                    tileset[i].setId(i);
+            for (int t = 0; t < tilesets.length; t++) {
+                Tile[] tiles = tilesets[t].getTiles();
+                for(int i = 0; i < tiles.length; i++) {
+                    if(tiles[i] != null ){
+                        tiles[i].setId(t*Tileset.TILESET_TILES+i);
+                    }
                 }
             }
             if(blockspath.toFile().exists()){
@@ -121,13 +113,9 @@ public class DisassemblyManager {
                 System.err.println("ERROR - File not found : "+blocksPath);
             }       
 
-            if(tileset!=null && inputData!=null){
-                if(tileset.length==MAPBLOCK_TILES_LENGTH){
-                   blocks = parseBlockData();
-                   System.out.println("Created MapBlocks with " + tileset.length + " tiles.");                       
-                }else{
-                    System.out.println("Could not create MapBlocks because of wrong length : tiles=" + tileset.length);
-                }
+            if(tilesets!=null && inputData!=null){
+                blocks = parseBlockData();
+                System.out.println("Created MapBlocks with " + blocks.length + " blocks.");
             }
         }catch(Exception e){
              System.err.println("com.sfc.sf2.mapblock.io.PngManager.importPng() - Error while parsing graphics data : "+e);
@@ -507,7 +495,7 @@ public class DisassemblyManager {
         outputTiles = new Tile[outputData.size()];
         for(int i=0;i<outputData.size();i++){
             short value = outputData.get(i);
-            Tile origTile = tileset[value&0x3FF];
+            Tile origTile = getTile(value&0x3FF);
             Tile tile = new Tile();
             tile.setPalette(origTile.getPalette());
             tile.setPixels(origTile.getPixels());
@@ -617,14 +605,14 @@ public class DisassemblyManager {
                             //System.err.println("WARNING - While pointing to previous tile from tileset, had to put tile value 0 instead of this one : "+index);
                             index = 0;
                         }
-                        nextTilesetTile = tileset[index];
+                        nextTilesetTile = getTile(index);
                     }else{
                         int index = previousTile.getId()+1;
-                        if(index>=tileset.length){
+                        if(index>=Tileset.MAP_TILESETS_TILES){
                             //System.err.println("WARNING - While pointing to previous tile from tileset, had to put tile value "+(tileset.length-1)+" instead of this one : "+index);
-                            index = tileset.length-1;
-                        }                        
-                        nextTilesetTile = tileset[index];
+                            index = Tileset.MAP_TILESETS_TILES-1;
+                        }
+                        nextTilesetTile = getTile(index);
                     }
                     if(nextTilesetTile.getId() == (tile.getId())
                             && previousTile.isHighPriority() == tile.isHighPriority()
@@ -760,8 +748,8 @@ public class DisassemblyManager {
         String value = null;
         for(int i=0;i<32;i++){
             int index = previousTile.getId() - i;
-            if(index>0 && index<tileset.length){
-                Tile relativeTile = tileset[index];
+            if(index>0 && index<Tileset.MAP_TILESETS_TILES){
+                Tile relativeTile = getTile(index);
                 if(tile.getId() == relativeTile.getId()){
                     String val = Integer.toString(i, 2);
                     while(val.length()<5){
@@ -776,8 +764,8 @@ public class DisassemblyManager {
         }
         for(int i=0;i<32;i++){
             int index = previousTile.getId() + i;
-            if(index>0 && index<tileset.length){
-                Tile relativeTile = tileset[index];
+            if(index>0 && index<Tileset.MAP_TILESETS_TILES){
+                Tile relativeTile = getTile(index);
                 if(tile.getId() == relativeTile.getId()){
                     String val = Integer.toString(i, 2);
                     while(val.length()<5){
@@ -812,6 +800,14 @@ public class DisassemblyManager {
         return value;
     }
     
+    private Tile getTile(int index) {
+        int tilesetIndex = index/Tileset.TILESET_TILES;
+        int tileIndex = index%Tileset.TILESET_TILES;
+        if (tilesetIndex < 0 || tilesetIndex >= tilesets.length) return null;
+        if (tileIndex < 0 || tileIndex >= Tileset.TILESET_TILES) return null;
+        return tilesets[tilesetIndex].getTiles()[index%Tileset.TILESET_TILES];
+    }
+    
     private static boolean isSameTile(Tile a, Tile b){
         if(a==null || b==null){
             return false;
@@ -828,13 +824,5 @@ public class DisassemblyManager {
 
     public void setTilesets(Tileset[] tilesets) {
         this.tilesets = tilesets;
-    }
-
-    public Tile[] getTileset() {
-        return tileset;
-    }
-
-    public void setTileset(Tile[] tileset) {
-        this.tileset = tileset;
     }
 }

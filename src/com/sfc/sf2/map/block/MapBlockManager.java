@@ -18,10 +18,9 @@ import com.sfc.sf2.palette.PaletteManager;
  */
 public class MapBlockManager {
        
-    private PaletteManager paletteManager = new PaletteManager();
-    private GraphicsManager graphicsManager = new GraphicsManager();
-    private DisassemblyManager disassemblyManager = new DisassemblyManager();
-    private Tile[] tiles;
+    private final PaletteManager paletteManager = new PaletteManager();
+    private final GraphicsManager graphicsManager = new GraphicsManager();
+    private final DisassemblyManager disassemblyManager = new DisassemblyManager();
     private Tileset[] tilesets;
     private MapBlock[] blocks;
        
@@ -29,7 +28,6 @@ public class MapBlockManager {
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Importing disassembly ...");
         paletteManager.importDisassembly(blocksPath);
         blocks = disassemblyManager.importDisassembly(incbinPath, paletteEntriesPath, tilesetEntriesPath, tilesetsFilePath, blocksPath);
-        tiles = disassemblyManager.getTileset();
         tilesets = disassemblyManager.getTilesets();
         //graphicsManager.setTiles(tiles);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Disassembly imported.");
@@ -38,7 +36,6 @@ public class MapBlockManager {
     public void importDisassembly(String palettePath, String[] tilesetPaths, String blocksPath){
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Importing disassembly ...");
         blocks = disassemblyManager.importDisassembly(palettePath, tilesetPaths, blocksPath);
-        tiles = disassemblyManager.getTileset();
         tilesets = disassemblyManager.getTilesets();
         //graphicsManager.setTiles(tiles);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Disassembly imported.");
@@ -47,7 +44,6 @@ public class MapBlockManager {
     public void importDisassembly(String palettePath, String[] tilesetPaths, String blocksPath, String animTilesetPath, int animTilesetStart, int animTilesetLength, int animTilesetDest){
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Importing disassembly ...");
         blocks = disassemblyManager.importDisassembly(palettePath, tilesetPaths, blocksPath, animTilesetPath, animTilesetStart, animTilesetLength, animTilesetDest);
-        tiles = disassemblyManager.getTileset();
         tilesets = disassemblyManager.getTilesets();
         //graphicsManager.setTiles(tiles);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Disassembly imported.");
@@ -55,7 +51,6 @@ public class MapBlockManager {
     
     public void exportDisassembly(String graphicsPath){
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Exporting disassembly ...");
-        disassemblyManager.setTileset(tiles);
         disassemblyManager.exportDisassembly(blocks, graphicsPath);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Disassembly exported.");        
     }   
@@ -63,7 +58,31 @@ public class MapBlockManager {
     public void importRom(String romFilePath, String paletteOffset, String paletteLength, String graphicsOffset, String graphicsLength){
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importOriginalRom() - Importing original ROM ...");
         graphicsManager.importRom(romFilePath, paletteOffset, paletteLength, graphicsOffset, graphicsLength,GraphicsManager.COMPRESSION_BASIC);
-        tiles = graphicsManager.getTiles();
+        Tile[] tiles = graphicsManager.getTiles();
+        tilesets = new Tileset[5];
+        for (int i = 0; i < tilesets.length; i++) {
+            if (tiles.length >= (i+1)*Tileset.TILESET_TILES) {
+                //Tiles array is long enough so copy over all tiles
+                Tile[] ts = new Tile[Tileset.TILESET_TILES];
+                System.arraycopy(tiles, i*Tileset.TILESET_TILES, ts, 0, Tileset.TILESET_TILES);
+                Tileset tileset = new Tileset();
+                tilesets[i] = tileset;
+            } else if (tiles.length <= i*Tileset.TILESET_TILES) {
+                //Tiles arry is not long enough to staart. Make empty tiletset
+                tilesets[i] = Tileset.EmptyTilset(tiles[0].getPalette());
+            } else {
+                //Tiles array is partial size so copy then build remainder
+                Tile[] ts = new Tile[Tileset.TILESET_TILES];
+                System.arraycopy(tiles, i*Tileset.TILESET_TILES, ts, 0, tiles.length%Tileset.TILESET_TILES);
+                Tile emptyTile = Tile.EmptyTile(tiles[0].getPalette());
+                for (int j = tiles.length%Tileset.TILESET_TILES; j < Tileset.TILESET_TILES; j++) {
+                    ts[j] = emptyTile;
+                }
+                Tileset tileset = new Tileset();
+                tilesets[i] = tileset;
+            }
+            tilesets[i].setName(String.format("%00d", i));
+        }
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importOriginalRom() - Original ROM imported.");
     }
     
@@ -107,14 +126,6 @@ public class MapBlockManager {
 
     public void setBlocks(MapBlock[] blocks) {
         this.blocks = blocks;
-    }
-
-    public Tile[] getTiles() {
-        return tiles;
-    }
-
-    public void setTiles(Tile[] tiles) {
-        this.tiles = tiles;
     }
 
     public Tileset[] getTilesets() {
