@@ -159,6 +159,9 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
         
         int x = e.getX() / (getWidth() / 3);
         int y = e.getY() / (getHeight() / 3);
+        if (x < 0 || x >= 3 || y < 0 || y >= 3) {
+            return;
+        }
         switch (currentMode) {
             case MODE_PAINT_TILE:
                 if (e.getButton() == MouseEvent.BUTTON1) {
