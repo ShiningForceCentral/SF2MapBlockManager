@@ -61,6 +61,10 @@ public class MapBlock {
     public void setTiles(Tile[] tiles) {
         this.tiles = tiles;
     }
+    
+    public Palette getPalette() {
+        return palette;
+    }
 
     public void setPalette(Palette palette) {
         this.palette = palette;
