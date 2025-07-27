@@ -52,6 +52,7 @@ public class DisassemblyManager {
     public MapBlock[] importDisassembly(String palettePath, String[] tilesetPaths, String blocksPath, String animTilesetPath, int animTilesetStart, int animTilesetLength, int animTilesetDest){
         System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.importDisassembly() - Importing disassembly ...");
         MapBlock[] blocks = null;
+        tilesets = new Tileset[5];
         inputData = null;
         inputCursor = -2;
         inputBitCursor = 16;
@@ -100,10 +101,12 @@ public class DisassemblyManager {
                 }
             }
             for (int t = 0; t < tilesets.length; t++) {
-                Tile[] tiles = tilesets[t].getTiles();
-                for(int i = 0; i < tiles.length; i++) {
-                    if(tiles[i] != null ){
-                        tiles[i].setId(t*Tileset.TILESET_TILES+i);
+                if (tilesets[t] != null) {
+                    Tile[] tiles = tilesets[t].getTiles();
+                    for(int i = 0; i < tiles.length; i++) {
+                        if(tiles[i] != null ){
+                            tiles[i].setId(t*Tileset.TILESET_TILES+i);
+                        }
                     }
                 }
             }

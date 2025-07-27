@@ -57,8 +57,13 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
     
     public BufferedImage buildImage() {
         if(redraw){
-            currentImage = buildImage(this.tilesets[selectedTileset], this.tilesPerRow);
-            setSize(currentImage.getWidth(), currentImage.getHeight());
+            if (tilesets == null || tilesets[selectedTileset] == null) {
+                currentImage = null;
+            } else {
+                currentImage = buildImage(this.tilesets[selectedTileset], this.tilesPerRow);
+                setSize(currentImage.getWidth(), currentImage.getHeight());
+            }
+            redraw = false;
         }
         return currentImage;
     }
@@ -66,7 +71,7 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
     public BufferedImage buildImage(Tileset tileset, int tilesPerRow) { 
         renderCounter++;
         System.out.println("Tileset render "+renderCounter);
-        if (redraw && tileset != null) {
+        if (redraw) {
             Tile[] tiles = tileset.getTiles();
             int tileHeight = tiles.length/tilesPerRow + ((tiles.length%tilesPerRow!=0)?1:0);
             currentImage = new BufferedImage(tilesPerRow*8+1, tileHeight*8+1, BufferedImage.TYPE_INT_ARGB);
@@ -95,7 +100,6 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
             graphics.dispose();
         }
         currentImage = resize(currentImage);
-        redraw = false;
         return currentImage;
     }
     
@@ -183,13 +187,21 @@ public class TilesetsPanel extends JPanel implements MouseListener, MouseMotionL
         int tileIndex = y*(tilesPerRow)+x;
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (leftSlotTilePanel != null) {
-                leftSlotTilePanel.setTile(tilesets[selectedTileset].getTiles()[tileIndex]);
+                if (tilesets[selectedTileset] == null) {
+                    leftSlotTilePanel.setTile(null);
+                } else {
+                    leftSlotTilePanel.setTile(tilesets[selectedTileset].getTiles()[tileIndex]);
+                }
                 leftSlotTilePanel.revalidate();
                 leftSlotTilePanel.repaint();
             }
         } else if(e.getButton() == MouseEvent.BUTTON3){
             if (rightSlotTilePanel != null) {
-                rightSlotTilePanel.setTile(tilesets[selectedTileset].getTiles()[tileIndex]);
+                if (tilesets[selectedTileset] == null) {
+                    rightSlotTilePanel.setTile(null);
+                } else {
+                    rightSlotTilePanel.setTile(tilesets[selectedTileset].getTiles()[tileIndex]);
+                }
                 rightSlotTilePanel.revalidate();
                 rightSlotTilePanel.repaint();
             }

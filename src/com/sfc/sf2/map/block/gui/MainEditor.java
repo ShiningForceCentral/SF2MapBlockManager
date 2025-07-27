@@ -1790,8 +1790,11 @@ public class MainEditor extends javax.swing.JFrame {
         Tileset[] tilesets = mapblockManager.getTilesets();
         String[] tilesetNames = new String[tilesets.length];
         for (int i = 0; i < tilesets.length; i++) {
-            if (tilesets[i] != null)
+            if (tilesets[i] == null) {
+                tilesetNames[i] = "NONE";
+            } else {
                 tilesetNames[i] = tilesets[i].getName();
+            }
         }
         jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(tilesetNames));
         
