@@ -517,8 +517,6 @@ public class DisassemblyManager {
             MapBlock block = new MapBlock();
             block.setIndex(i);
             block.setTiles(Arrays.copyOfRange(outputTiles,i*9, i*9+9));
-            block.setPalette(block.getTiles()[0].getPalette());
-            block.setIcm(block.getTiles()[0].getIcm());
             blocks[i] = block;
         }
         return blocks;

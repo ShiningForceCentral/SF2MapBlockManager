@@ -46,7 +46,6 @@ public class RawImageManager {
                 MapBlock block = new MapBlock();
                 block.setIndex(i);
                 block.setTiles(blockTiles[i]);
-                block.setPalette(blockTiles[i][0].getPalette());
                 blocks[i] = block;
             }
             

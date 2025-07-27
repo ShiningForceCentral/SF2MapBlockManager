@@ -34,8 +34,6 @@ public class MapBlock {
     private BufferedImage indexedColorImage = null;
     private BufferedImage explorationFlagImage;
     private BufferedImage interactionFlagImage;
-    private Palette palette;
-    private IndexColorModel icm;
     private int[][] pixels = new int[PIXEL_HEIGHT][PIXEL_WIDTH];
     
     public int getIndex() {
@@ -63,19 +61,28 @@ public class MapBlock {
     }
     
     public Palette getPalette() {
-        return palette;
+        if (tiles == null) {
+            return null;
+        } else {
+            return tiles[0].getPalette();
+        }
     }
 
-    public void setPalette(Palette palette) {
-        this.palette = palette;
+    public void setPaletteForTiles(Palette palette) {
+        if (tiles != null) {
+            for (int i = 0; i < tiles.length; i++) {
+                tiles[i].setPalette(palette);
+            }
+        }
     }
 
     public IndexColorModel getIcm() {
-        return icm;
-    }
-
-    public void setIcm(IndexColorModel icm) {
-        this.icm = icm;
+        Palette palette = getPalette();
+        if (palette == null) {
+            return null;
+        } else {
+            return palette.getIcm();
+        }
     }
 
     public int[][] getPixels() {
@@ -84,10 +91,6 @@ public class MapBlock {
 
     public void setPixels(int[][] pixels) {
         this.pixels = pixels;
-    }
-
-    public void buildIcm(){
-        icm = palette.buildICM();
     }
     
     public void updatePixels(){
@@ -102,15 +105,13 @@ public class MapBlock {
         for(int i=0;i<pixels.length;i++){
             for(int j=0;j<pixels[i].length;j++){
                 this.pixels[y+j][x+i] = pixels[i][j];
-                //data[(y+j)*width+x+i] = (byte)(pixels[i][j]);
             }
         }
     }
 
     public BufferedImage getIndexedColorImage(){
-        if(indexedColorImage==null && palette != null) {
-            if (icm == null) buildIcm();
-            indexedColorImage = new BufferedImage(PIXEL_WIDTH, PIXEL_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, icm);
+        if(indexedColorImage==null && getPalette() != null) {
+            indexedColorImage = new BufferedImage(PIXEL_WIDTH, PIXEL_HEIGHT, BufferedImage.TYPE_BYTE_INDEXED, getPalette().getIcm());
             byte[] data = ((DataBufferByte)(indexedColorImage.getRaster().getDataBuffer())).getData();
             int width = indexedColorImage.getWidth();
             for(int i=0;i<pixels.length;i++){
@@ -171,8 +172,6 @@ public class MapBlock {
         clone.setIndex(this.index);
         clone.setFlags(this.flags);
         clone.setTiles(this.tiles.clone());
-        clone.setPalette(this.palette);
-        clone.setIcm(this.icm);
         clone.setExplorationFlagImage(this.explorationFlagImage);
         clone.setInteractionFlagImage(this.interactionFlagImage);
         return clone;
