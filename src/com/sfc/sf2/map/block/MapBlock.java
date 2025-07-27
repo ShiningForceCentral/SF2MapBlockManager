@@ -31,13 +31,12 @@ public class MapBlock {
     
     private Tile[] tiles;
     
-    private BufferedImage image;
+    private BufferedImage indexedColorImage = null;
     private BufferedImage explorationFlagImage;
     private BufferedImage interactionFlagImage;
     private Palette palette;
     private IndexColorModel icm;
     private int[][] pixels = new int[PIXEL_HEIGHT][PIXEL_WIDTH];
-    private BufferedImage indexedColorImage = null;
     
     public int getIndex() {
         return index;
@@ -85,14 +84,6 @@ public class MapBlock {
 
     public void buildIcm(){
         icm = palette.buildICM();
-    }
-
-    public BufferedImage getImage() {
-        return image;
-    }
-
-    public void setImage(BufferedImage image) {
-        this.image = image;
     }
     
     public void updatePixels(){
@@ -177,7 +168,6 @@ public class MapBlock {
         clone.setFlags(this.flags);
         clone.setTiles(this.tiles.clone());
         clone.setIcm(this.icm);
-        clone.setImage(this.image);
         clone.setExplorationFlagImage(this.explorationFlagImage);
         clone.setInteractionFlagImage(this.interactionFlagImage);
         return clone;

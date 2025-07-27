@@ -218,7 +218,6 @@ public class EditableBlockSlotPanel extends BlockSlotPanel implements MouseListe
     }
     
     private void onBlockUpdated() {
-        block.setImage(null);
         block.setIndexedColorImage(null);
         mapBlockLayout.mapBlocksChanged();
         mapBlockLayout.revalidate();
