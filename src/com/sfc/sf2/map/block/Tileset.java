@@ -35,6 +35,13 @@ public class Tileset {
         this.tiles = tiles;
     }
     
+    public Tileset clone() {
+        Tileset newTileset = new Tileset();
+        newTileset.setName(this.name);
+        newTileset.setTiles(this.tiles.clone());
+        return newTileset;
+    }
+    
     public static Tileset EmptyTilset(Palette palette) {
         Tile emptyTile = Tile.EmptyTile(palette);
         Tile[] tiles = new Tile[128];
