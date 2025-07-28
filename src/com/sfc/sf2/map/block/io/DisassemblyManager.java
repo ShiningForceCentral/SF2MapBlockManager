@@ -547,9 +547,10 @@ public class DisassemblyManager {
         return bit;
     }
 
-    public void exportDisassembly(MapBlock[] blocks, String filePath){
+    public void exportDisassembly(MapBlock[] blocks, Tileset[] tilesets, String filePath){
         System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.exportDisassembly() - Exporting disassembly ...");
         try {
+            this.tilesets = tilesets;
             byte[] blockBytes = produceBlockBytes(blocks);
             Path graphicsFilePath = Paths.get(filePath);
             Files.write(graphicsFilePath,blockBytes);
@@ -821,9 +822,5 @@ public class DisassemblyManager {
 
     public Tileset[] getTilesets() {
         return tilesets;
-    }
-
-    public void setTilesets(Tileset[] tilesets) {
-        this.tilesets = tilesets;
     }
 }

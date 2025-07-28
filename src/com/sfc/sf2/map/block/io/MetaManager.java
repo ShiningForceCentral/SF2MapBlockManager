@@ -5,7 +5,6 @@
  */
 package com.sfc.sf2.map.block.io;
 
-import com.sfc.sf2.graphics.Tile;
 import com.sfc.sf2.map.block.MapBlock;
 import java.io.BufferedWriter;
 import java.io.File;

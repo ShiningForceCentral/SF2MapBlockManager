@@ -51,7 +51,7 @@ public class MapBlockManager {
     
     public void exportDisassembly(String graphicsPath){
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Exporting disassembly ...");
-        disassemblyManager.exportDisassembly(blocks, graphicsPath);
+        disassemblyManager.exportDisassembly(blocks, tilesets, graphicsPath);
         System.out.println("com.sfc.sf2.mapblock.MapBlockManager.importDisassembly() - Disassembly exported.");        
     }   
     
