@@ -1552,6 +1552,7 @@ public class MainEditor extends javax.swing.JFrame {
             }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        mapblockManager.setBlocks(mapblockLayout.getBlocks());
         mapblockManager.exportDisassembly(jTextField14.getText());
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -1638,7 +1639,7 @@ public class MainEditor extends javax.swing.JFrame {
             blocksetPath = toolPath.resolve(bPath).normalize();
         }
         System.out.println(blocksetPath.toString());
-        
+        mapblockManager.setBlocks(mapblockLayout.getBlocks());
         mapblockManager.exportDisassembly(blocksetPath.toString());
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -1808,6 +1809,7 @@ public class MainEditor extends javax.swing.JFrame {
         System.arraycopy(blocks, 0, newBlocks, 0, blocks.length);
         newBlocks[newBlocks.length - 1] = cloneBlock(blocks[3]);
         mapblockLayout.setBlocks(newBlocks);
+        mapblockManager.setBlocks(newBlocks);
         jPanel18.revalidate();
         jPanel18.repaint();
     }//GEN-LAST:event_jButton35ActionPerformed
@@ -1817,6 +1819,7 @@ public class MainEditor extends javax.swing.JFrame {
         MapBlock[] newBlocks = new MapBlock[blocks.length - 1];
         System.arraycopy(blocks, 0, newBlocks, 0, blocks.length - 1);
         mapblockLayout.setBlocks(newBlocks);
+        mapblockManager.setBlocks(newBlocks);
         jPanel18.revalidate();
         jPanel18.repaint();
     }//GEN-LAST:event_jButton36ActionPerformed
