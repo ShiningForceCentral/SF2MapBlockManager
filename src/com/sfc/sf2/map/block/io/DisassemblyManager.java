@@ -499,17 +499,22 @@ public class DisassemblyManager {
         for(int i=0;i<outputData.size();i++){
             short value = outputData.get(i);
             Tile origTile = getTile(value&0x3FF);
-            Tile tile = new Tile();
-            tile.setPalette(origTile.getPalette());
-            tile.setPixels(origTile.getPixels());
-            if((value&0x8000)!=0){
-                tile.setHighPriority(true);
-            }
-            if((value&0x1000)!=0){
-                tile = Tile.vFlip(tile);
-            }
-            if((value&0x0800)!=0){
-                tile = Tile.hFlip(tile);
+            Tile tile;
+            if (origTile == null) {
+                tile = Tile.EmptyTile(palette);
+            } else {
+                tile = new Tile();
+                tile.setPalette(palette);
+                tile.setPixels(origTile.getPixels());
+                if((value&0x8000)!=0){
+                    tile.setHighPriority(true);
+                }
+                if((value&0x1000)!=0){
+                    tile = Tile.vFlip(tile);
+                }
+                if((value&0x0800)!=0){
+                    tile = Tile.hFlip(tile);
+                }
             }
             tile.setId(value&0x3FF);
             outputTiles[i] = tile;
@@ -550,6 +555,7 @@ public class DisassemblyManager {
     public void exportDisassembly(MapBlock[] blocks, Tileset[] tilesets, String filePath){
         System.out.println("com.sfc.sf2.mapblock.io.DisassemblyManager.exportDisassembly() - Exporting disassembly ...");
         try {
+            this.palette = blocks[0].getPalette();
             this.tilesets = tilesets;
             byte[] blockBytes = produceBlockBytes(blocks);
             Path graphicsFilePath = Paths.get(filePath);
