@@ -42,6 +42,18 @@ public class Tileset {
         return newTileset;
     }
     
+    public boolean isTilesetEmpty() {
+        if (tiles == null || tiles.length == 0) {
+            return true;
+        }
+        for (int i = 0; i < tiles.length; i++) {
+            if (!tiles[i].isTileEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public static Tileset EmptyTilset(Palette palette) {
         Tile emptyTile = Tile.EmptyTile(palette);
         Tile[] tiles = new Tile[128];
