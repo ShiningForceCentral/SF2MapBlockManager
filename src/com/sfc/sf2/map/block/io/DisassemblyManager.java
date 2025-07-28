@@ -752,15 +752,17 @@ public class DisassemblyManager {
             int index = previousTile.getId() - i;
             if(index>0 && index<Tileset.MAP_TILESETS_TILES){
                 Tile relativeTile = getTile(index);
-                if(tile.getId() == relativeTile.getId()){
-                    String val = Integer.toString(i, 2);
-                    while(val.length()<5){
-                        val = "0" + val;
+                if (relativeTile != null) {
+                    if(tile.getId() == relativeTile.getId()){
+                        String val = Integer.toString(i, 2);
+                        while(val.length()<5){
+                            val = "0" + val;
+                        }
+                        String sign = "1";
+                        //System.out.println("Relative value = $-" + Integer.toString(Integer.parseInt(val, 2),16));
+                        value = "0" + val + sign;
+                        return value;
                     }
-                    String sign = "1";
-                    //System.out.println("Relative value = $-" + Integer.toString(Integer.parseInt(val, 2),16));
-                    value = "0" + val + sign;
-                    return value;
                 }
             }
         }
@@ -768,15 +770,17 @@ public class DisassemblyManager {
             int index = previousTile.getId() + i;
             if(index>0 && index<Tileset.MAP_TILESETS_TILES){
                 Tile relativeTile = getTile(index);
-                if(tile.getId() == relativeTile.getId()){
-                    String val = Integer.toString(i, 2);
-                    while(val.length()<5){
-                        val = "0" + val;
+                if (relativeTile != null) {
+                    if(tile.getId() == relativeTile.getId()){
+                        String val = Integer.toString(i, 2);
+                        while(val.length()<5){
+                            val = "0" + val;
+                        }
+                        String sign = "0";
+                        //System.out.println("Relative value = $" + Integer.toString(Integer.parseInt(val, 2),16));
+                        value = "0" + val + sign;
+                        return value;
                     }
-                    String sign = "0";
-                    //System.out.println("Relative value = $" + Integer.toString(Integer.parseInt(val, 2),16));
-                    value = "0" + val + sign;
-                    return value;
                 }
             }
         }
@@ -805,6 +809,7 @@ public class DisassemblyManager {
     private Tile getTile(int index) {
         int tilesetIndex = index/Tileset.TILESET_TILES;
         int tileIndex = index%Tileset.TILESET_TILES;
+        if (tilesets[tilesetIndex] == null) return null;
         if (tilesetIndex < 0 || tilesetIndex >= tilesets.length) return null;
         if (tileIndex < 0 || tileIndex >= Tileset.TILESET_TILES) return null;
         return tilesets[tilesetIndex].getTiles()[index%Tileset.TILESET_TILES];
