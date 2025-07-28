@@ -1626,8 +1626,6 @@ public class MainEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton25ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        mapblockManager.setBlocks(mapblockLayout.getBlocks());
-        
         String toolDir = System.getProperty("user.dir");
         Path toolPath = Paths.get(toolDir);
         System.out.println(toolPath.toString());       
